@@ -118,27 +118,30 @@ h1, h2, h3, p { margin: 0; }
 }
 
 /* ---------- Le portrait dans le cadre ovale ---------- */
-/* Le cadre doré (image Canva détourée, 420 × 696) est posé sur le cuir, juste devant le rebord du fond,
-   pieds visibles. La photo de Laurent passe derrière son ouverture ovale (mesurée : 7,25 % / 20,7 %, 75,25 % × 66 %). */
+/* Le cadre doré (image Canva détourée, 457 × 696) est posé sur le cuir, juste devant le rebord du fond,
+   pieds visibles. La photo de Laurent passe derrière son ouverture ovale (mesurée : 14,7 % / 20,7 %, 69,2 % × 66 %). */
 .portrait {
-  position: absolute; left: calc(942 * var(--k)); top: calc(232 * var(--k)); width: calc(199 * var(--k)); height: calc(330 * var(--k)); display: block; z-index: 1;
+  position: absolute; left: calc(925 * var(--k)); top: calc(232 * var(--k)); width: calc(216 * var(--k)); height: calc(330 * var(--k)); display: block; z-index: 1;
 }
 .portrait::before { /* ombre de contact sur le cuir */
   content: ""; position: absolute; left: 0; right: -6%; bottom: -2.5%; height: 7%; border-radius: 50%;
   background: radial-gradient(ellipse, rgba(0, 0, 0, .8), rgba(0, 0, 0, .35) 45%, rgba(0, 0, 0, 0) 70%);
 }
-.portrait__photo {
-  position: absolute; left: 6.8%; top: 20.3%; width: 76.2%; height: 66.8%; border-radius: 50%; overflow: hidden; background: #2A2016;
+.portrait__photo { /* tirage ancien sous verre ; le fond blanc de la photo se prolonge au-dessus de la tête */
+  position: absolute; left: 14.25%; top: 20.3%; width: 70.1%; height: 66.8%; border-radius: 50%; overflow: hidden; background: #FFF;
+  filter: grayscale(1) sepia(.75) contrast(.88) brightness(.45) blur(.3px); transition: filter .5s ease;
 }
-.portrait__photo img { width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 52% 16%; filter: grayscale(1) sepia(.8) contrast(.95) brightness(.47); transition: filter .5s ease; }
-.portrait__photo::after { /* vignette de vieille photo et reflet du verre */
+/* Cadrage d'un portrait ovale : tête entière avec de l'air au-dessus, yeux vers 40 % de la hauteur, épaules en bas. */
+.portrait__photo img { position: absolute; left: 50%; bottom: 0; width: 118%; height: auto; max-width: none; transform: translateX(-51.5%); }
+.portrait__photo::after { /* ombre du cadre sur le tirage, vignette, reflet du verre */
   content: ""; position: absolute; inset: 0; border-radius: 50%;
+  box-shadow: inset calc(5 * var(--k)) calc(9 * var(--k)) calc(12 * var(--k)) rgba(0, 0, 0, .6), inset 0 0 calc(4 * var(--k)) rgba(0, 0, 0, .7);
   background:
-    linear-gradient(118deg, rgba(255, 255, 255, 0) 30%, rgba(220, 230, 255, .1) 38%, rgba(255, 255, 255, 0) 46%),
-    radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, 0) 45%, rgba(20, 12, 6, .7) 100%);
+    linear-gradient(122deg, rgba(255, 255, 255, 0) 22%, rgba(255, 255, 255, .16) 30%, rgba(255, 255, 255, .05) 36%, rgba(255, 255, 255, 0) 44%),
+    radial-gradient(ellipse at 50% 46%, rgba(0, 0, 0, 0) 42%, rgba(40, 25, 10, .7) 100%);
 }
 .portrait__cadre { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; filter: brightness(.7) saturate(.85) drop-shadow(calc(6 * var(--k)) calc(4 * var(--k)) calc(6 * var(--k)) rgba(0, 0, 0, .55)); transition: filter .5s ease; }
-.portrait:hover .portrait__photo img, .portrait:focus-visible .portrait__photo img { filter: grayscale(1) sepia(.8) contrast(.98) brightness(.64); }
+.portrait:hover .portrait__photo, .portrait:focus-visible .portrait__photo { filter: grayscale(1) sepia(.75) contrast(.9) brightness(.66) blur(.3px); }
 .portrait:hover .portrait__cadre, .portrait:focus-visible .portrait__cadre { filter: brightness(.85) saturate(.9) drop-shadow(calc(6 * var(--k)) calc(4 * var(--k)) calc(6 * var(--k)) rgba(0, 0, 0, .55)); }
 
 /* ---------- La plaque « Contact », comme une plaque de bureau en laiton sur son socle ---------- */
@@ -334,7 +337,7 @@ h1, h2, h3, p { margin: 0; }
   .retour { font-size: 18px; }
   .retour { left: 50%; transform: translateX(-50%); }
   .pile__etiquette { font-size: 17px; }
-  .portrait { left: calc(930 * var(--k)); top: calc(298 * var(--k)); width: calc(159 * var(--k)); height: calc(264 * var(--k)); } /* plus petit : la pile et le portrait tiennent dans l'écran */
+  .portrait { left: calc(900 * var(--k)); top: calc(298 * var(--k)); width: calc(173 * var(--k)); height: calc(264 * var(--k)); } /* plus petit : la pile et le portrait tiennent dans l'écran */
   .apropos { gap: 55px; }
 }
 
