@@ -20,15 +20,20 @@
 
     <!-- Le bureau -->
     <section class="vue vue--bureau" aria-label="Le bureau de l’écrivain">
-      <div class="decor" style="--fx:.5;--mfx:.47">
+      <div class="decor" style="--fx:.5;--mfx:.495">
         <img class="decor__fond" src="img/decor-bureau.jpg" width="1680" height="944" alt="">
         <span class="lueur lueur--lanterne" aria-hidden="true"></span>
         <span class="lueur lueur--flamme" aria-hidden="true"></span>
         <span class="lueur lueur--mur" aria-hidden="true"></span>
 
-        <a class="portrait" href="a-propos.html" aria-label="À propos de Laurent Blondeau"><img src="img/portrait.jpg" width="417" height="444" alt=""></a>
+        <a class="portrait" href="a-propos.html" aria-label="À propos de Laurent Blondeau">
+          <span class="portrait__photo"><img src="img/portrait.jpg" width="417" height="444" alt=""></span>
+          <img class="portrait__cadre" src="img/cadre-ovale.png" width="226" height="338" alt="">
+        </a>
 
-        <a class="parchemin" href="a-propos.html#contact"><span class="parchemin__etiquette">Écrire à l’auteur</span></a>
+        <a class="plaque" href="a-propos.html#contact"><span class="plaque__laiton">Contact</span></a>
+
+        <a class="parchemin" href="a-propos.html#contact" tabindex="-1" aria-hidden="true"><span class="parchemin__etiquette">Écrire à l’auteur</span></a>
 
         <div class="pile">
           <span class="pile__etiquette" aria-hidden="true"></span>
@@ -217,6 +222,9 @@
       <button class="retour" type="button">Revenir au bureau</button>
       <p class="aide aide--biblio">Choisissez un livre pour l’ouvrir</p>
     </section>
+
+    <!-- Le lourd rideau entre les deux murs : il passe devant le regard pendant qu'on tourne la tête -->
+    <span class="rideau" aria-hidden="true"></span>
 
   </div>
 

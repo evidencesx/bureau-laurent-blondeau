@@ -38,31 +38,22 @@
   var camera = document.querySelector('.camera');
   if (!camera) return;
 
-  /* ---------- La caméra : deux murs côte à côte, on tourne la tête de l'un à l'autre ---------- */
+  /* ---------- La caméra : deux murs côte à côte, on tourne la tête de l'un à l'autre ----------
+     Le mouvement lui-même est en CSS (.vue-biblio, .tourne) ; ici on ne fait que poser les classes. */
   var vueBureau = camera.querySelector('.vue--bureau');
   var vueBiblio = camera.querySelector('.vue--biblio');
   var vueActive = 'bureau';
-
-  function cadrer() {
-    var l = camera.clientWidth;
-    var P = l * 0.85;
-    var angle = 2 * Math.atan(l / 2 / P) * 180 / Math.PI; // les deux murs se touchent exactement
-    camera.style.setProperty('--P', P + 'px');
-    camera.style.setProperty('--angle', angle + 'deg');
-  }
-  cadrer();
-  window.addEventListener('resize', cadrer);
+  var minuteur = 0;
 
   function aller(vue, livre, instantane) {
     if (vue === vueActive) return;
     vueActive = vue;
-    var piece = camera.querySelector('.piece');
     vueBureau.inert = vue !== 'bureau';
     vueBiblio.inert = vue !== 'biblio';
+    clearTimeout(minuteur);
     var arrivee = function () {
       camera.classList.remove('tourne');
       if (vue === 'biblio') {
-        camera.classList.add('pose-biblio');
         var cible = livre && vueBiblio.querySelector('.book[data-livre="' + livre + '"]');
         if (cible) {
           cible.focus({ preventScroll: true });
@@ -76,21 +67,18 @@
       }
     };
     if (instantane || moinsDeMouvement) {
+      camera.classList.add('sans-transition');
       camera.classList.toggle('vue-biblio', vue === 'biblio');
-      if (vue !== 'biblio') camera.classList.remove('pose-biblio');
+      void camera.offsetWidth;
+      camera.classList.remove('sans-transition');
       arrivee();
       return;
     }
-    if (vue === 'bureau') {
-      // on remet la bibliothèque dans sa position tournée, sans animation, avant de tourner la tête
-      piece.style.transition = 'none';
-      camera.classList.remove('pose-biblio');
-      void piece.offsetWidth;
-      piece.style.transition = '';
-    }
+    camera.classList.remove('tourne');
+    void camera.offsetWidth; // relance l'animation du regard même si on fait demi-tour en route
     camera.classList.add('tourne');
     camera.classList.toggle('vue-biblio', vue === 'biblio');
-    setTimeout(arrivee, 1750);
+    minuteur = setTimeout(arrivee, parseFloat(getComputedStyle(camera).getPropertyValue('--duree')) * 1000 + 50);
   }
   window.allerVers = aller;
 

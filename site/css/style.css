@@ -49,18 +49,43 @@ h1, h2, h3, p { margin: 0; }
 .menu a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
 .menu a:hover, .apropos a:hover { color: var(--flamme); }
 
-/* ---------- La caméra et les deux vues ---------- */
-.camera { position: relative; height: 100vh; height: 100svh; min-height: 520px; overflow: hidden; container-type: size; perspective: var(--P, 1200px); background: var(--nuit); }
-.piece { position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: 50% 50% var(--P, 1200px); transition: transform 1.7s cubic-bezier(.62, 0, .22, 1); }
-.camera.vue-biblio .piece { transform: rotateY(calc(var(--angle, 64deg) * -1)); }
-.vue { position: absolute; inset: 0; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: filter 1.7s ease; }
-.vue--biblio { transform-origin: 50% 50% var(--P, 1200px); transform: rotateY(var(--angle, 64deg)); }
-.camera.tourne .vue { filter: brightness(.8); }
-/* Au repos, la vue active est remise à plat : même image, mais les clics passent sans calcul 3D. */
-.camera:not(.vue-biblio):not(.tourne) .vue--biblio { visibility: hidden; }
-.camera.pose-biblio .piece { transition: none; transform: none; }
-.camera.pose-biblio .vue--biblio { transform: none; }
-.camera.pose-biblio .vue--bureau { visibility: hidden; }
+/* ---------- La caméra et les deux vues ----------
+   Les deux murs sont posés côte à côte, la bibliothèque à gauche du bureau. Tourner la tête,
+   c'est faire glisser la pièce d'un écran vers la droite, avec ce qu'un vrai regard ajoute :
+   le flou de bougé, un léger mouvement de tête, et le rideau au premier plan qui passe plus vite
+   que le fond (parallaxe) et cache la jointure entre les deux photos. */
+.camera { position: relative; height: 100vh; height: 100svh; min-height: 520px; overflow: hidden; container-type: size; background: var(--nuit); --duree: 2.3s; --regard: cubic-bezier(.55, 0, .3, 1); }
+.piece { position: absolute; inset: 0; transition: transform var(--duree) var(--regard); }
+.camera.vue-biblio .piece { transform: translateX(100%); }
+.vue { position: absolute; inset: 0; overflow: hidden; }
+.vue--biblio { transform: translateX(-100%); }
+.camera.tourne .piece { animation: regard var(--duree) ease-in-out; }
+@keyframes regard {
+  0%, 100% { scale: 1; translate: 0 0; filter: none; }
+  25% { filter: blur(1.5px) brightness(.88); }
+  50% { scale: 1.045; translate: 0 -1.1%; filter: blur(3px) brightness(.8); }
+  75% { filter: blur(1.5px) brightness(.88); }
+}
+/* Au repos, seul le mur regardé existe pour la souris et le clavier. */
+.camera:not(.vue-biblio):not(.tourne) .vue--biblio,
+.camera.vue-biblio:not(.tourne) .vue--bureau { visibility: hidden; }
+.camera.sans-transition .piece, .camera.sans-transition .rideau { transition: none; }
+
+/* Le rideau : centré sur la jointure, il glisse 1,35 fois plus vite que la pièce. */
+.rideau {
+  position: absolute; top: -6%; bottom: -6%; left: calc(-19.5cqw); width: 39cqw; pointer-events: none; visibility: hidden;
+  transform: translateX(-17.5cqw); transition: transform var(--duree) var(--regard);
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, .8), rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0) 65%, rgba(0, 0, 0, .85)),
+    linear-gradient(90deg, rgba(120, 150, 200, .1), rgba(120, 150, 200, 0) 35%, rgba(255, 170, 90, 0) 60%, rgba(255, 170, 90, .14)),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .55) 1.3cqw, rgba(0, 0, 0, 0) 3.1cqw),
+    repeating-linear-gradient(90deg, #08100E 0, #15211D 2.2cqw, #22322C 3cqw, #101A17 4.1cqw, #070C0B 5.3cqw);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  filter: blur(9px); /* au premier plan, hors de la mise au point */
+}
+.camera.tourne .rideau { visibility: visible; }
+.camera.vue-biblio .rideau { transform: translateX(17.5cqw); }
 
 /* Le décor garde les proportions de l'image et couvre l'écran ; --k convertit les pixels de l'image. */
 .decor {
@@ -69,6 +94,13 @@ h1, h2, h3, p { margin: 0; }
   transform: translate(calc(-100% * var(--fx)), -50%) translate(calc(var(--px, 0) * -8px), calc(var(--py, 0) * -5px)) scale(1.02);
 }
 .decor__fond { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+/* La bibliothèque doit tenir en hauteur, du haut des livres à la plaque du bas (lignes 50 à 894 de l'image) :
+   sur un écran très large, on la cale sur la hauteur et on prolonge les côtés d'un reflet flou du décor. */
+.vue--biblio .decor { --k: calc(min(max(100cqw, 177.966cqh), 195cqh) / 1680); }
+@container (min-aspect-ratio: 195 / 100) {
+  .vue--biblio::before { content: ""; position: absolute; inset: -40px; background: url("../img/decor-bibliotheque.jpg") center / cover; filter: blur(16px) brightness(.45); }
+  .vue--biblio .decor { -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+}
 
 .lueur { position: absolute; border-radius: 50%; pointer-events: none; mix-blend-mode: screen; transform: translate(-50%, -50%); }
 .lueur--lanterne { left: calc(122 * var(--k)); top: calc(452 * var(--k)); width: calc(560 * var(--k)); height: calc(560 * var(--k)); background: radial-gradient(circle, rgba(255, 175, 85, .28), rgba(255, 150, 60, .1) 35%, rgba(255, 140, 50, 0) 70%); animation: vacille 3.4s ease-in-out infinite; }
@@ -88,20 +120,48 @@ h1, h2, h3, p { margin: 0; }
 }
 
 /* ---------- Le portrait dans le cadre ovale ---------- */
+/* Le cadre est découpé de la photo d'origine (226 × 338) et reposé au fond du bureau, réduit à 85 %
+   parce qu'il est plus loin. La photo de Laurent passe derrière son ouverture ovale. */
 .portrait {
-  position: absolute; left: calc(262 * var(--k)); top: calc(357 * var(--k)); width: calc(121 * var(--k)); height: calc(169 * var(--k));
-  border-radius: 50%; overflow: hidden; transform: rotate(-5deg); display: block;
-  box-shadow: inset 0 0 calc(8 * var(--k)) rgba(0, 0, 0, .7);
+  position: absolute; left: calc(910 * var(--k)); top: calc(227 * var(--k)); width: calc(192 * var(--k)); height: calc(287 * var(--k)); display: block;
 }
-.portrait img { width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 50% 22%; filter: grayscale(1) sepia(.85) contrast(.92) brightness(.46) blur(.35px); transition: filter .5s ease; }
-.portrait::after { /* vignette de vieille photo, reflet du verre et lumière de la lanterne venue de gauche */
-  content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+.portrait::before { /* ombre de contact sur le cuir */
+  content: ""; position: absolute; left: 8%; right: 4%; bottom: -3%; height: 9%; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, .75), rgba(0, 0, 0, 0) 70%);
+}
+.portrait__photo {
+  position: absolute; left: 23%; top: 28.2%; width: 54%; height: 52.6%; border-radius: 50%; overflow: hidden; transform: rotate(-8deg);
+}
+.portrait__photo img { width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 52% 18%; transform: rotate(8deg) scale(1.12); filter: grayscale(1) sepia(.8) contrast(.95) brightness(.55); transition: filter .5s ease; }
+.portrait__photo::after { /* vignette de vieille photo et reflet du verre */
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
   background:
-    linear-gradient(118deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, .1) 38%, rgba(255, 255, 255, 0) 46%),
-    linear-gradient(90deg, rgba(255, 170, 80, .2), rgba(255, 170, 80, 0) 55%),
-    radial-gradient(ellipse at 50% 42%, rgba(0, 0, 0, 0) 30%, rgba(20, 12, 6, .82) 100%);
+    linear-gradient(118deg, rgba(255, 255, 255, 0) 30%, rgba(220, 230, 255, .1) 38%, rgba(255, 255, 255, 0) 46%),
+    radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, 0) 45%, rgba(20, 12, 6, .7) 100%);
 }
-.portrait:hover img, .portrait:focus-visible img { filter: grayscale(1) sepia(.85) contrast(.95) brightness(.62) blur(.35px); }
+.portrait__cadre { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; filter: brightness(.82) saturate(.9); transition: filter .5s ease; }
+.portrait:hover .portrait__photo img, .portrait:focus-visible .portrait__photo img { filter: grayscale(1) sepia(.8) contrast(.98) brightness(.72); }
+.portrait:hover .portrait__cadre, .portrait:focus-visible .portrait__cadre { filter: brightness(.95) saturate(.95); }
+
+/* ---------- La plaque « Contact », comme une plaque de bureau en laiton sur son socle ---------- */
+.plaque { position: absolute; left: calc(1150 * var(--k)); top: calc(489 * var(--k)); width: calc(186 * var(--k)); height: calc(42 * var(--k)); display: block; text-decoration: none; filter: brightness(.8); transition: filter .4s ease; }
+.plaque::before { /* socle en noyer, et son ombre sur le cuir */
+  content: ""; position: absolute; left: -3%; right: -3%; bottom: 0; height: 24%;
+  background: linear-gradient(180deg, #5A3A1E, #3A2412 45%, #1E120A);
+  box-shadow: 0 calc(5 * var(--k)) calc(9 * var(--k)) rgba(0, 0, 0, .8), inset 0 1px 0 rgba(255, 200, 140, .25);
+  border-radius: 1px;
+}
+.plaque__laiton {
+  position: absolute; left: 0; right: 0; top: 0; bottom: 22%; display: flex; align-items: center; justify-content: center;
+  transform: perspective(calc(300 * var(--k))) rotateX(16deg); transform-origin: 50% 100%;
+  background: linear-gradient(180deg, #F1DCA0 0, #C9A55E 9%, #9C7A3C 40%, #7A5B28 75%, #5E4520);
+  border: 1px solid #2E2010; border-top-color: rgba(205, 220, 255, .75); /* le clair de lune accroche l'arête */
+  box-shadow: inset 0 0 0 calc(3 * var(--k)) rgba(255, 230, 170, .12), inset 0 0 0 calc(4 * var(--k)) rgba(40, 26, 10, .35);
+  font-family: var(--titre); font-weight: 400; font-size: calc(19 * var(--k)); letter-spacing: .32em; text-indent: .32em; text-transform: uppercase;
+  color: #2A1C0B; text-shadow: 0 1px 0 rgba(255, 236, 190, .4); /* lettres gravées */
+}
+.plaque:hover, .plaque:focus-visible { filter: brightness(1.05); }
+.plaque:focus-visible { outline-offset: 6px; }
 
 /* ---------- Le parchemin : la page contact ---------- */
 .parchemin { position: absolute; left: calc(1125 * var(--k)); top: calc(526 * var(--k)); width: calc(388 * var(--k)); height: calc(166 * var(--k)); display: block; text-decoration: none; }
@@ -197,6 +257,7 @@ h1, h2, h3, p { margin: 0; }
 .accueil .entete { position: absolute; z-index: 10; top: 0; left: 0; right: 0; pointer-events: none; background: linear-gradient(180deg, rgba(8, 6, 5, .65), rgba(8, 6, 5, 0)); }
 .accueil .entete a { pointer-events: auto; }
 .aide { position: absolute; z-index: 3; left: 50%; bottom: 21px; transform: translateX(-50%); white-space: nowrap; pointer-events: none; font-family: var(--etiquette); font-size: 21px; letter-spacing: .22em; text-transform: uppercase; color: #E9D9BB; text-shadow: 0 2px 8px rgba(0, 0, 0, .9); }
+.aide--biblio { left: auto; right: var(--marge); transform: none; } /* au centre, elle cacherait la plaque du bas */
 .retour {
   position: absolute; z-index: 4; left: 21px; bottom: 13px; white-space: nowrap; min-height: 44px; padding: 8px 21px; border: 1px solid rgba(241, 232, 213, .55); background: rgba(14, 10, 8, .75); color: var(--papier); cursor: pointer;
   font-family: var(--etiquette); font-size: 21px; letter-spacing: .14em; text-transform: uppercase;
@@ -279,6 +340,7 @@ h1, h2, h3, p { margin: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .piece, .vue, .tome, .book, .book img { transition: none; }
+  .piece, .rideau, .tome, .book, .book img { transition: none; }
+  .camera.tourne .piece { animation: none; }
   .lueur { animation: none; }
 }
