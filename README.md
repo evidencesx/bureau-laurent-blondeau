@@ -8,7 +8,7 @@ En ligne (préproduction, non indexée) : [laurent-blondeau-bureau.netlify.app](
 
 Un bureau de manoir la nuit. Sur le cuir : une lanterne, le portrait de l'auteur dans un cadre ovale, une plaque de bureau « Contact », un parchemin, un encrier, une plume, une clé, et la pile de ses livres. Au clic sur un livre de la pile, le regard balaie la pièce vers la gauche (panoramique avec flou de bougé, un rideau passe au premier plan) et s'arrête sur une bibliothèque où les livres sont rangés par catégorie. Au clic sur un livre de l'étagère, il vient au centre et s'ouvre sur son résumé et son prix.
 
-Les deux décors sont des images générées avec Canva ; tout ce qui bouge ou se clique est posé par-dessus en HTML et CSS. Le cadre ovale a été découpé du décor du bureau (`img/cadre-ovale.png`) et reposé plus loin ; sa place d’origine a été rebouchée dans `img/decor-bureau.jpg`.
+Les deux décors sont des images générées avec Canva ; tout ce qui bouge ou se clique est posé par-dessus en HTML et CSS. Le cadre doré (`img/cadre-dore.png`) et le rideau de velours de la transition (`img/rideau.jpg`) sont aussi des images Canva : le cadre a été détouré sur fond vert, la photo de Laurent passe derrière son ouverture. Le cadre d’origine du décor a été effacé de `img/decor-bureau.jpg`.
 
 ## Fichiers
 
