@@ -1,0 +1,284 @@
+/* Laurent Blondeau, le bureau de l'écrivain.
+   Idée : un bureau de manoir la nuit, photographique. Les livres sont empilés sur le cuir ;
+   au clic, la vue tourne vers la gauche, vers la bibliothèque où ils sont rangés par catégorie.
+   Les décors sont des images ; tout ce qui bouge ou se clique est posé par-dessus, en coordonnées
+   de l'image (1680 × 944) multipliées par --k. */
+
+@font-face { font-family: "Sofia Sans Extra Condensed"; src: url("../polices/sofia-sans-extra-condensed-latin-wght-normal.woff2") format("woff2"); font-weight: 1 1000; font-display: swap; }
+@font-face { font-family: "Spectral"; src: url("../polices/spectral-latin-200-normal.woff2") format("woff2"); font-weight: 200; font-display: swap; }
+@font-face { font-family: "Spectral"; src: url("../polices/spectral-latin-200-italic.woff2") format("woff2"); font-weight: 200; font-style: italic; font-display: swap; }
+@font-face { font-family: "Spectral"; src: url("../polices/spectral-latin-300-normal.woff2") format("woff2"); font-weight: 300; font-display: swap; }
+@font-face { font-family: "Spectral"; src: url("../polices/spectral-latin-300-italic.woff2") format("woff2"); font-weight: 300; font-style: italic; font-display: swap; }
+@font-face { font-family: "Spectral"; src: url("../polices/spectral-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Spectral"; src: url("../polices/spectral-latin-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+
+@property --sort { syntax: "<number>"; inherits: false; initial-value: 0; }
+
+:root {
+  --nuit: #0D0A08;
+  --papier: #F1E8D5;
+  --encre: #22252B;
+  --encre-douce: #5A5C60;
+  --cendre: #CFC6B6;
+  --laiton: #C9A764;
+  --flamme: #F2A54A;
+  --light: #F2A54A;
+  --light-rgb: 242, 165, 74;
+  --titre: "Spectral", Georgia, "Times New Roman", serif;
+  --etiquette: "Sofia Sans Extra Condensed", "Arial Narrow", "Helvetica Neue", sans-serif;
+  --marge: clamp(16px, 3vw, 55px);
+  --douce: cubic-bezier(.22, .9, .24, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--nuit); color: var(--papier); font-family: var(--titre); font-size: 21px; line-height: 1.5; overflow-x: hidden; }
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; }
+h1, h2, h3, p { margin: 0; }
+:focus-visible { outline: 2px solid var(--papier); outline-offset: 4px; }
+.visuellement-cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---------- En-tête ---------- */
+.entete { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 34px; padding: 21px var(--marge); }
+.entete h1, .entete__nom { font-family: var(--etiquette); font-weight: 300; font-size: clamp(28px, 3.4vw, 52px); line-height: 1.1; letter-spacing: .18em; text-transform: uppercase; text-shadow: 0 2px 13px rgba(0, 0, 0, .8); }
+.entete__nom a { text-decoration: none; }
+.entete__titre { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 34px; min-width: 0; }
+.entete__phrase { font-style: italic; font-weight: 300; font-size: 21px; line-height: 1.3; }
+.menu { display: flex; flex-wrap: wrap; gap: 0 34px; font-family: var(--etiquette); font-size: 21px; letter-spacing: .2em; text-transform: uppercase; text-shadow: 0 2px 8px rgba(0, 0, 0, .9); }
+.menu a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
+.menu a:hover, .apropos a:hover { color: var(--flamme); }
+
+/* ---------- La caméra et les deux vues ---------- */
+.camera { position: relative; height: 100vh; height: 100svh; min-height: 520px; overflow: hidden; container-type: size; perspective: var(--P, 1200px); background: var(--nuit); }
+.piece { position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: 50% 50% var(--P, 1200px); transition: transform 1.7s cubic-bezier(.62, 0, .22, 1); }
+.camera.vue-biblio .piece { transform: rotateY(calc(var(--angle, 64deg) * -1)); }
+.vue { position: absolute; inset: 0; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: filter 1.7s ease; }
+.vue--biblio { transform-origin: 50% 50% var(--P, 1200px); transform: rotateY(var(--angle, 64deg)); }
+.camera.tourne .vue { filter: brightness(.8); }
+/* Au repos, la vue active est remise à plat : même image, mais les clics passent sans calcul 3D. */
+.camera:not(.vue-biblio):not(.tourne) .vue--biblio { visibility: hidden; }
+.camera.pose-biblio .piece { transition: none; transform: none; }
+.camera.pose-biblio .vue--biblio { transform: none; }
+.camera.pose-biblio .vue--bureau { visibility: hidden; }
+
+/* Le décor garde les proportions de l'image et couvre l'écran ; --k convertit les pixels de l'image. */
+.decor {
+  --k: calc(max(100cqw, 177.966cqh) / 1680);
+  position: absolute; top: 50%; left: 50%; width: calc(1680 * var(--k)); height: calc(944 * var(--k));
+  transform: translate(calc(-100% * var(--fx)), -50%) translate(calc(var(--px, 0) * -8px), calc(var(--py, 0) * -5px)) scale(1.02);
+}
+.decor__fond { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+
+.lueur { position: absolute; border-radius: 50%; pointer-events: none; mix-blend-mode: screen; transform: translate(-50%, -50%); }
+.lueur--lanterne { left: calc(122 * var(--k)); top: calc(452 * var(--k)); width: calc(560 * var(--k)); height: calc(560 * var(--k)); background: radial-gradient(circle, rgba(255, 175, 85, .28), rgba(255, 150, 60, .1) 35%, rgba(255, 140, 50, 0) 70%); animation: vacille 3.4s ease-in-out infinite; }
+.lueur--flamme { left: calc(122 * var(--k)); top: calc(452 * var(--k)); width: calc(34 * var(--k)); height: calc(64 * var(--k)); background: radial-gradient(ellipse at 50% 62%, rgba(255, 236, 190, .55), rgba(255, 180, 90, .2) 45%, rgba(255, 150, 60, 0) 72%); transform-origin: 50% 80%; animation: flamme 1.6s ease-in-out infinite; }
+.lueur--mur { left: calc(667 * var(--k)); top: calc(132 * var(--k)); width: calc(200 * var(--k)); height: calc(200 * var(--k)); background: radial-gradient(circle, rgba(255, 180, 90, .22), rgba(255, 150, 60, 0) 70%); animation: vacille 4.3s ease-in-out infinite; }
+.lueur--b1, .lueur--b2, .lueur--b3, .lueur--b4 { width: calc(320 * var(--k)); height: calc(320 * var(--k)); background: radial-gradient(circle, rgba(255, 175, 85, .22), rgba(255, 150, 60, .07) 35%, rgba(255, 140, 50, 0) 70%); }
+.lueur--b1 { left: calc(298 * var(--k)); top: calc(172 * var(--k)); animation: vacille 3.6s ease-in-out infinite; }
+.lueur--b2 { left: calc(1378 * var(--k)); top: calc(162 * var(--k)); animation: vacille 4.4s ease-in-out infinite reverse; }
+.lueur--b3 { left: calc(298 * var(--k)); top: calc(545 * var(--k)); animation: vacille 3.1s ease-in-out infinite; }
+.lueur--b4 { left: calc(1380 * var(--k)); top: calc(540 * var(--k)); animation: vacille 3.9s ease-in-out infinite reverse; }
+@keyframes vacille { 0%, 100% { opacity: 1; } 17% { opacity: .78; } 33% { opacity: .95; } 49% { opacity: .72; } 66% { opacity: 1; } 82% { opacity: .84; } }
+@keyframes flamme {
+  0%, 100% { transform: translate(-50%, -50%) scale(1, 1) skewX(0deg); opacity: 1; }
+  25% { transform: translate(-50%, -50%) scale(.92, 1.08) skewX(3deg); opacity: .85; }
+  50% { transform: translate(-50%, -50%) scale(1.05, .94) skewX(-2deg); opacity: 1; }
+  75% { transform: translate(-50%, -50%) scale(.96, 1.1) skewX(1deg); opacity: .9; }
+}
+
+/* ---------- Le portrait dans le cadre ovale ---------- */
+.portrait {
+  position: absolute; left: calc(262 * var(--k)); top: calc(357 * var(--k)); width: calc(121 * var(--k)); height: calc(169 * var(--k));
+  border-radius: 50%; overflow: hidden; transform: rotate(-5deg); display: block;
+  box-shadow: inset 0 0 calc(8 * var(--k)) rgba(0, 0, 0, .7);
+}
+.portrait img { width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 50% 22%; filter: grayscale(1) sepia(.85) contrast(.92) brightness(.46) blur(.35px); transition: filter .5s ease; }
+.portrait::after { /* vignette de vieille photo, reflet du verre et lumière de la lanterne venue de gauche */
+  content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+  background:
+    linear-gradient(118deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, .1) 38%, rgba(255, 255, 255, 0) 46%),
+    linear-gradient(90deg, rgba(255, 170, 80, .2), rgba(255, 170, 80, 0) 55%),
+    radial-gradient(ellipse at 50% 42%, rgba(0, 0, 0, 0) 30%, rgba(20, 12, 6, .82) 100%);
+}
+.portrait:hover img, .portrait:focus-visible img { filter: grayscale(1) sepia(.85) contrast(.95) brightness(.62) blur(.35px); }
+
+/* ---------- Le parchemin : la page contact ---------- */
+.parchemin { position: absolute; left: calc(1125 * var(--k)); top: calc(526 * var(--k)); width: calc(388 * var(--k)); height: calc(166 * var(--k)); display: block; text-decoration: none; }
+.parchemin::before { /* le parchemin s'éclaire au survol, à sa forme exacte */
+  content: ""; position: absolute; inset: 0; opacity: 0; transition: opacity .4s ease;
+  clip-path: polygon(1% 17%, 56% 2%, 100% 75%, 43% 99%, 4% 31%);
+  background: radial-gradient(ellipse at 45% 50%, rgba(255, 210, 140, .3), rgba(255, 200, 120, .08));
+  mix-blend-mode: screen;
+}
+.parchemin__etiquette {
+  position: absolute; left: 46%; top: 44%; transform: translate(-50%, -50%) rotate(19deg);
+  font-family: var(--titre); font-style: italic; font-size: calc(26 * var(--k)); color: rgba(60, 38, 20, .85); white-space: nowrap;
+  opacity: .0; transition: opacity .4s ease;
+}
+.parchemin:hover::before, .parchemin:focus-visible::before { opacity: 1; }
+.parchemin:hover .parchemin__etiquette, .parchemin:focus-visible .parchemin__etiquette { opacity: 1; }
+
+/* ---------- La pile de livres, en volume ---------- */
+.pile { position: absolute; left: calc(760 * var(--k)); top: calc(655 * var(--k)); width: 0; height: 0; perspective: calc(1500 * var(--k)); perspective-origin: calc(80 * var(--k)) calc(-183 * var(--k)); }
+.pile__plan { position: absolute; left: 0; top: 0; transform-style: preserve-3d; transform: rotateX(67deg) rotateZ(-4deg) scale3d(1.2, 1.2, 1.2); }
+.pile__ombre { position: absolute; left: 0; top: 0; width: calc(340 * var(--k)); height: calc(260 * var(--k)); transform: translate(-46%, -44%); border-radius: 50%; background: radial-gradient(ellipse, rgba(0, 0, 0, .85), rgba(0, 0, 0, .35) 45%, rgba(0, 0, 0, 0) 72%); }
+.tome {
+  position: absolute; left: 0; top: 0; width: calc(var(--l) * var(--k)); height: calc(var(--p) * var(--k));
+  padding: 0; border: 0; background: none; cursor: pointer; transform-style: preserve-3d;
+  transform: translate(-50%, -50%) translate3d(calc(var(--dx) * var(--k)), calc((var(--dy) + var(--sort)) * var(--k)), calc(var(--z) * var(--k))) rotateZ(var(--r));
+  transition: --sort .5s var(--douce);
+}
+.tome > span { position: absolute; }
+.tome__dessus, .tome__tranche { display: block; }
+.tome__dessus { inset: 0; transform: translateZ(calc(var(--e) * var(--k))); overflow: hidden; background: linear-gradient(90deg, rgba(255, 170, 90, .14), rgba(0, 0, 0, .25)), var(--c); }
+.tome--dessus .tome__dessus img { position: absolute; left: 50%; top: 50%; width: calc(var(--p) * var(--k)); height: calc(var(--l) * var(--k)); max-width: none; transform: translate(-50%, -50%) rotate(-90deg); filter: brightness(.82); }
+.tome--dessus .tome__dessus::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255, 175, 90, .16), rgba(0, 0, 0, .28)); }
+.tome__dos {
+  left: 0; top: calc((var(--p) - var(--e)) * var(--k)); width: 100%; height: calc(var(--e) * var(--k));
+  transform-origin: bottom; transform: rotateX(-90deg);
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 calc(14 * var(--k)); overflow: hidden;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, 0) 35%, rgba(0, 0, 0, .4)), linear-gradient(90deg, rgba(255, 175, 90, .22), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, .3)), var(--c);
+  color: var(--t); font-family: var(--etiquette); font-weight: 500; font-size: calc(var(--e) * .52 * var(--k)); line-height: 1; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
+}
+.tome__dos small { font-size: .8em; opacity: .75; }
+.tome__dos::before, .tome__dos::after { content: ""; position: absolute; top: 18%; bottom: 18%; width: 1px; background: var(--t); opacity: .45; }
+.tome__dos::before { left: 4%; }
+.tome__dos::after { right: 4%; }
+.tome__tranche {
+  left: calc((var(--l) - var(--e)) * var(--k)); top: 0; width: calc(var(--e) * var(--k)); height: 100%;
+  transform-origin: right; transform: rotateY(90deg);
+  background: repeating-linear-gradient(90deg, #E2D6BA 0, #E2D6BA 1px, #C7B996 1px, #C7B996 2px);
+  box-shadow: inset 2px 0 0 var(--c), inset -2px 0 0 var(--c), inset 0 0 0 100vmax rgba(40, 25, 10, .25);
+}
+.tome:hover, .tome:focus-visible { --sort: 40; }
+.tome:focus-visible { outline: none; }
+.tome:focus-visible .tome__dos { outline: 2px solid var(--papier); }
+.pile__etiquette {
+  position: absolute; left: 0; bottom: calc(175 * var(--k)); transform: translate(-50%, 8px); white-space: nowrap; padding: 3px 13px;
+  background: rgba(14, 10, 8, .9); border: 1px solid rgba(242, 165, 74, .55); font-family: var(--etiquette); font-size: 21px; letter-spacing: .1em; line-height: 1.3;
+  opacity: 0; transition: opacity .25s ease, transform .35s var(--douce); pointer-events: none;
+}
+.pile__etiquette.visible { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- La bibliothèque ---------- */
+.rayons { position: absolute; inset: 0; }
+.rayon { position: absolute; left: calc(var(--x) * var(--k)); top: calc(var(--y) * var(--k)); width: calc(var(--w) * var(--k)); height: calc(var(--h) * var(--k)); }
+.rayon__livres { position: absolute; inset: 0; display: flex; justify-content: center; align-items: flex-end; gap: calc(16 * var(--k)); }
+.fiche { position: relative; flex: 0 0 auto; }
+.fiche__texte { display: none; }
+.book {
+  display: block; text-decoration: none; transform-origin: 50% 100%;
+  transform: perspective(calc(700 * var(--k))) rotateX(5deg) translateZ(0) rotate(var(--rr));
+  transition: transform .55s var(--douce);
+}
+.book img {
+  height: calc(150 * var(--k)); width: auto; max-width: none;
+  box-shadow: calc(2 * var(--k)) 0 0 #D8CDB2, calc(4 * var(--k)) 0 0 #9C9079, calc(8 * var(--k)) calc(-3 * var(--k)) calc(14 * var(--k)) rgba(0, 0, 0, .7);
+  filter: brightness(.74) sepia(.12); transition: filter .4s ease;
+}
+@media (hover: hover) {
+  .book:hover { transform: perspective(calc(700 * var(--k))) rotateX(-14deg) translateZ(calc(34 * var(--k))) rotate(0deg); }
+  .book:hover img { filter: brightness(1.02); }
+  .rayons:has(.book:hover) .book:not(:hover) img { filter: brightness(.5) sepia(.12); }
+}
+.book:focus-visible { transform: perspective(calc(700 * var(--k))) rotateX(-14deg) translateZ(calc(34 * var(--k))) rotate(0deg); outline-offset: 4px; }
+.book:focus-visible img { filter: brightness(1.02); }
+.book.appel img { animation: appel 1.6s ease-in-out 2; }
+@keyframes appel { 50% { filter: brightness(1.15); box-shadow: 0 0 calc(30 * var(--k)) rgba(255, 190, 100, .55); } }
+.rayon__plaque {
+  position: absolute; left: 50%; top: 100%; transform: translate(-50%, calc(1 * var(--k))); white-space: nowrap;
+  padding: calc(2 * var(--k)) calc(12 * var(--k)); background: linear-gradient(180deg, #D4B677, #8E6D38); color: #2A1E0E;
+  box-shadow: 0 calc(2 * var(--k)) calc(5 * var(--k)) rgba(0, 0, 0, .7), inset 0 1px 0 rgba(255, 240, 200, .5);
+  font-family: var(--etiquette); font-weight: 500; font-size: max(11px, calc(14 * var(--k))); line-height: 1.25; letter-spacing: .18em; text-transform: uppercase;
+}
+
+/* ---------- Aides, retour, particules ---------- */
+.accueil .entete { position: absolute; z-index: 10; top: 0; left: 0; right: 0; pointer-events: none; background: linear-gradient(180deg, rgba(8, 6, 5, .65), rgba(8, 6, 5, 0)); }
+.accueil .entete a { pointer-events: auto; }
+.aide { position: absolute; z-index: 3; left: 50%; bottom: 21px; transform: translateX(-50%); white-space: nowrap; pointer-events: none; font-family: var(--etiquette); font-size: 21px; letter-spacing: .22em; text-transform: uppercase; color: #E9D9BB; text-shadow: 0 2px 8px rgba(0, 0, 0, .9); }
+.retour {
+  position: absolute; z-index: 4; left: 21px; bottom: 13px; white-space: nowrap; min-height: 44px; padding: 8px 21px; border: 1px solid rgba(241, 232, 213, .55); background: rgba(14, 10, 8, .75); color: var(--papier); cursor: pointer;
+  font-family: var(--etiquette); font-size: 21px; letter-spacing: .14em; text-transform: uppercase;
+}
+.retour:hover { background: var(--papier); color: var(--encre); }
+.particules { position: absolute; inset: 0; z-index: 8; width: 100%; height: 100%; pointer-events: none; }
+
+/* ---------- Page À propos ---------- */
+#brume { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -2; display: block; }
+.apropos { background: rgba(14, 10, 8, .62); margin: 0 var(--marge); padding: clamp(34px, 6vw, 89px) clamp(21px, 6vw, 89px); display: flex; flex-direction: column; gap: 89px; border: 1px solid rgba(242, 165, 74, .14); }
+.apropos > * { max-width: 1100px; width: 100%; margin-inline: auto; }
+.apropos h1, .apropos h2 { font-weight: 200; font-size: clamp(34px, 5vw, 55px); line-height: 1.1; }
+.auteur { display: flex; flex-wrap: wrap; gap: 34px 89px; align-items: center; }
+.auteur > img { flex: 1 1 233px; min-width: 0; max-width: 377px; filter: grayscale(1) sepia(.3) contrast(1.05) brightness(.86); }
+.auteur__texte { flex: 1.618 1 377px; min-width: 0; display: flex; flex-direction: column; gap: 21px; }
+.auteur__texte p { max-width: 34em; }
+.auteur__citation { font-style: italic; font-weight: 200; font-size: clamp(34px, 4vw, 55px); line-height: 1.15; }
+.editeurs, .contact { display: flex; flex-direction: column; gap: 34px; }
+.editeurs__liste { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(233px, 100%), 1fr)); gap: 34px; }
+.editeurs__liste > div { display: flex; flex-direction: column; gap: 8px; }
+.editeurs__liste h3 { font-family: var(--etiquette); font-weight: 400; font-size: 21px; letter-spacing: .16em; text-transform: uppercase; color: var(--cendre); }
+.editeurs__liste a { overflow-wrap: anywhere; }
+.pied { padding: 21px var(--marge) 34px; }
+.pied__note { font-size: 16px; color: var(--cendre); }
+
+/* ---------- Le livre ouvert ---------- */
+.lecteur { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: none; color: var(--encre); overflow: hidden; }
+.lecteur::backdrop { background: transparent; }
+.lecteur__voile { position: absolute; inset: 0; background: radial-gradient(circle at 50% 46%, rgba(255, 170, 80, .2), rgba(255, 170, 80, 0) 60%), rgba(12, 9, 7, .6); -webkit-backdrop-filter: blur(13px); backdrop-filter: blur(13px); }
+.lecteur__fermer {
+  position: absolute; z-index: 3; top: 13px; right: 13px; min-height: 44px; padding: 8px 21px; border: 1px solid rgba(241, 232, 213, .55); background: rgba(14, 10, 8, .75); color: var(--papier);
+  font-family: var(--etiquette); font-size: 21px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer;
+}
+.lecteur__fermer:hover { background: var(--papier); color: var(--encre); }
+.ob-scene { position: absolute; inset: 0; display: grid; place-items: center; perspective: 2400px; pointer-events: none; }
+.ob-decale, .ob { transform-style: preserve-3d; }
+.ob { position: relative; width: var(--pw); height: var(--ph); pointer-events: auto; }
+.ob-page { position: absolute; inset: 0; background: var(--papier); padding: clamp(21px, 3.4vmin, 34px); overflow-y: auto; font-size: 17px; line-height: 1.5; color: var(--encre); }
+.ob-page--droite { display: flex; flex-direction: column; gap: 21px; padding-bottom: 0; box-shadow: inset 21px 0 21px -21px rgba(34, 37, 43, .4), 21px 34px 55px rgba(0, 0, 0, .6), 2px 2px 0 #DAD0B8, 4px 4px 0 #C2B79E; }
+.ob-page--droite:focus-visible { outline-offset: -4px; outline-color: var(--encre); }
+.ob-page--gauche { transform: rotateY(180deg); backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: inset -21px 0 21px -21px rgba(34, 37, 43, .4), -21px 34px 55px rgba(0, 0, 0, .6), -2px 2px 0 #DAD0B8, -4px 4px 0 #C2B79E; display: flex; flex-direction: column; justify-content: center; }
+.ob-couv { position: absolute; inset: 0; transform-origin: left center; transform-style: preserve-3d; }
+.ob-face { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 21px 34px 55px rgba(0, 0, 0, .6); }
+.etiquette { font-family: var(--etiquette); font-size: 21px; line-height: 1.25; letter-spacing: .14em; text-transform: uppercase; color: var(--light); }
+.accroche { font-style: italic; text-wrap: pretty; }
+.meta { font-size: 16px; }
+.prix { font-weight: 300; font-size: 34px; line-height: 1.2; }
+.resume { display: flex; flex-direction: column; gap: 13px; }
+.ob-tete { display: flex; flex-direction: column; gap: 13px; }
+.ob-tete .etiquette { color: var(--encre-douce); }
+.ob-tete h2 { font-weight: 200; font-size: clamp(34px, calc(var(--pw) / 8.5), 55px); line-height: 1.05; text-wrap: balance; }
+.ob-tete h2::after { content: ""; display: block; width: 55px; height: 3px; margin-top: 21px; background: var(--light); }
+.ob-tete .accroche { color: var(--encre); font-size: 21px; line-height: 1.35; }
+.ob-tete .meta { color: var(--encre-douce); font-size: 15px; }
+.ob-page--droite > .ob-tete { display: none; }
+.ob-corps { display: flex; flex-direction: column; gap: 13px; }
+.ob-achat { position: sticky; bottom: 0; margin-top: auto; padding: 13px 0; background: var(--papier); border-top: 1px solid rgba(34, 37, 43, .22); display: flex; flex-wrap: wrap; align-items: center; gap: 8px 21px; }
+.ob-prix { font-weight: 300; font-size: 34px; line-height: 1.2; }
+.ob-achat button { flex: 1 1 144px; min-height: 44px; border: 0; padding: 8px 13px; background: var(--encre); color: var(--papier); font-family: var(--etiquette); font-weight: 500; font-size: 21px; letter-spacing: .1em; }
+.ob-achat button:disabled { opacity: .55; cursor: not-allowed; }
+.ob-note { flex-basis: 100%; font-size: 15px; color: var(--encre-douce); }
+.lecteur--simple .ob-page--gauche { display: none; }
+.lecteur--simple .ob-page--droite > .ob-tete { display: flex; }
+
+/* ---------- Téléphone : on cadre sur la pile et sur les étagères ---------- */
+@media (max-width: 760px) {
+  body { font-size: 19px; }
+  .decor { transform: translate(calc(-100% * var(--mfx)), -50%); }
+  .accueil .entete { padding-top: 8px; }
+  .menu { gap: 0 21px; }
+  .aide { font-size: 17px; letter-spacing: .14em; bottom: 72px; }
+  .aide--biblio { display: none; }
+  .accueil .entete { flex-wrap: nowrap; padding-inline: 16px; }
+  .accueil .entete h1 { font-size: 21px; letter-spacing: .14em; }
+  .accueil .menu a[href$="#contact"] { display: none; }
+  .retour { font-size: 18px; }
+  .retour { left: 50%; transform: translateX(-50%); }
+  .pile__etiquette { font-size: 17px; }
+  .apropos { gap: 55px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .piece, .vue, .tome, .book, .book img { transition: none; }
+  .lueur { animation: none; }
+}

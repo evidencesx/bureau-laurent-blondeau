@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laurent Blondeau, écrivain</title>
+<meta name="description" content="Thrillers, polars, fiction historique, poésies et développement personnel : les livres de Laurent Blondeau.">
+<!-- Préproduction : à retirer à l'ouverture, avec l'en-tête X-Robots-Tag de netlify.toml. -->
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23140E0A'/%3E%3Cpath d='M16 6c3 4 4 7 4 9a4 4 0 0 1-8 0c0-2 1-5 4-9z' fill='%23F2A54A'/%3E%3C/svg%3E">
+<link rel="preload" href="img/decor-bureau.jpg" as="image">
+<link rel="preload" href="polices/sofia-sans-extra-condensed-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css">
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body class="accueil">
+
+<div class="camera" id="haut">
+  <div class="piece">
+
+    <!-- Le bureau -->
+    <section class="vue vue--bureau" aria-label="Le bureau de l’écrivain">
+      <div class="decor" style="--fx:.5;--mfx:.47">
+        <img class="decor__fond" src="img/decor-bureau.jpg" width="1680" height="944" alt="">
+        <span class="lueur lueur--lanterne" aria-hidden="true"></span>
+        <span class="lueur lueur--flamme" aria-hidden="true"></span>
+        <span class="lueur lueur--mur" aria-hidden="true"></span>
+
+        <a class="portrait" href="a-propos.html" aria-label="À propos de Laurent Blondeau"><img src="img/portrait.jpg" width="417" height="444" alt=""></a>
+
+        <a class="parchemin" href="a-propos.html#contact"><span class="parchemin__etiquette">Écrire à l’auteur</span></a>
+
+        <div class="pile">
+          <span class="pile__etiquette" aria-hidden="true"></span>
+          <div class="pile__plan">
+            <span class="pile__ombre"></span>
+            <button class="tome" type="button" data-livre="le-phare-interieur" style="--l:277;--p:196;--e:14;--z:0;--dx:4;--dy:-6;--r:3deg;--c:#16203A;--t:#D9A441">
+              <span class="tome__dessus"></span><span class="tome__dos"><span>Le phare intérieur</span><small>L. Blondeau</small></span><span class="tome__tranche"></span>
+              <span class="visuellement-cache">Le phare intérieur</span>
+            </button>
+            <button class="tome" type="button" data-livre="l-heritage-empoisonne" style="--l:211;--p:150;--e:24;--z:14;--dx:-10;--dy:4;--r:-5deg;--c:#141110;--t:#C9A764">
+              <span class="tome__dessus"></span><span class="tome__dos"><span>L’héritage empoisonné</span><small>L. Blondeau</small></span><span class="tome__tranche"></span>
+              <span class="visuellement-cache">L’héritage empoisonné</span>
+            </button>
+            <button class="tome" type="button" data-livre="urbex-codex" style="--l:210;--p:136;--e:22;--z:38;--dx:8;--dy:-2;--r:4deg;--c:#1D1B19;--t:#C9C2B4">
+              <span class="tome__dessus"></span><span class="tome__dos"><span>Urbex Codex</span><small>L. Blondeau</small></span><span class="tome__tranche"></span>
+              <span class="visuellement-cache">Urbex Codex</span>
+            </button>
+            <button class="tome" type="button" data-livre="l-autre" style="--l:210;--p:132;--e:24;--z:60;--dx:-4;--dy:6;--r:-2deg;--c:#0C0F11;--t:#7FB8A0">
+              <span class="tome__dessus"></span><span class="tome__dos"><span>L’Autre</span><small>L. Blondeau</small></span><span class="tome__tranche"></span>
+              <span class="visuellement-cache">L’Autre</span>
+            </button>
+            <button class="tome" type="button" data-livre="le-mal-est-certain" style="--l:210;--p:132;--e:20;--z:84;--dx:6;--dy:-4;--r:6deg;--c:#22332F;--t:#DCE6E0">
+              <span class="tome__dessus"></span><span class="tome__dos"><span>Le mal est certain</span><small>L. Blondeau</small></span><span class="tome__tranche"></span>
+              <span class="visuellement-cache">Le mal est certain</span>
+            </button>
+            <button class="tome" type="button" data-livre="des-mots-sur-les-maux" style="--l:202;--p:135;--e:9;--z:104;--dx:-6;--dy:2;--r:-7deg;--c:#B0433A;--t:#FFFFFF">
+              <span class="tome__dessus"></span><span class="tome__dos"><span>Des mots sur les maux</span></span><span class="tome__tranche"></span>
+              <span class="visuellement-cache">Des mots sur les maux</span>
+            </button>
+            <button class="tome tome--dessus" type="button" data-livre="mots-sur-maux" style="--l:200;--p:148;--e:10;--z:113;--dx:2;--dy:0;--r:3deg;--c:#1E2C4F;--t:#FFFFFF">
+              <span class="tome__dessus"><img src="img/mots-sur-maux.jpg" width="650" height="879" alt=""></span><span class="tome__dos"><span>Mots sur maux</span></span><span class="tome__tranche"></span>
+              <span class="visuellement-cache">Mots sur maux</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <p class="aide aide--bureau">Prenez un livre de la pile</p>
+    </section>
+
+    <!-- La bibliothèque, à gauche : la vue y tourne au clic sur la pile -->
+    <section class="vue vue--biblio" aria-label="La bibliothèque" inert>
+      <div class="decor" style="--fx:.5;--mfx:.5">
+        <img class="decor__fond" src="img/decor-bibliotheque.jpg" width="1680" height="944" alt="" loading="lazy">
+        <span class="lueur lueur--b1" aria-hidden="true"></span>
+        <span class="lueur lueur--b2" aria-hidden="true"></span>
+        <span class="lueur lueur--b3" aria-hidden="true"></span>
+        <span class="lueur lueur--b4" aria-hidden="true"></span>
+
+        <main id="livres" class="rayons">
+
+          <section class="rayon" style="--x:668;--y:44;--w:344;--h:178" aria-labelledby="rayon-polars">
+            <div class="rayon__livres">
+
+              <article class="fiche" id="urbex-codex" style="--light:#C9B48A;--rr:-2deg;--i:0" data-rgb="201,180,138">
+                <a class="book" href="#urbex-codex" data-livre="urbex-codex"><img src="img/urbex-codex.jpg" width="711" height="1100" alt="Urbex Codex"></a>
+                <div class="fiche__texte">
+                  <p class="etiquette">Thriller, 2022</p>
+                  <h3>Urbex Codex</h3>
+                  <p class="accroche">Pourra-t-elle affronter ces découvertes et découvrir ce qui se cache derrière ce chemin douloureux&nbsp;?</p>
+                  <div class="resume">
+                    <p>Élise, jeune professionnelle dans une médiathèque, équilibre sa vie entre sa thèse, son boulot et ses découvertes nocturnes. Elle se trouve entraînée dans une suite de meurtres à énigmes qui va lui faire explorer ses peurs tout au long de l’aventure.</p>
+                    <p>Une série de meurtres, dont elle va découvrir les traces et les corps lors de ses explorations, va la mettre au centre d’une énigme à étapes qu’elle devra déchiffrer et suivre pour en découvrir l’issue. Comme dans un puzzle, elle avance dans des suppositions guidées par des parties d’indices et des textes allégoriques laissés par le criminel.</p>
+                  </div>
+                  <p class="meta">ISBN 978-2-38441-090-3</p>
+                  <p class="prix">19&nbsp;€</p>
+                </div>
+              </article>
+
+              <article class="fiche" id="l-autre" style="--light:#7FB8A0;--rr:1deg;--i:1" data-rgb="127,184,160">
+                <a class="book" href="#l-autre" data-livre="l-autre"><img src="img/l-autre.jpg" width="691" height="1100" alt="L’Autre"></a>
+                <div class="fiche__texte">
+                  <p class="etiquette">Thriller psychologique, 2024</p>
+                  <h3>L’Autre</h3>
+                  <p class="accroche">Comment va-t-il interpréter ces crimes et aller au bout des confrontations les plus dérangeantes&nbsp;?</p>
+                  <div class="resume">
+                    <p>Marc, patrouilleur sur l’autoroute A40 dont la vie a été perturbée par des accidents familiaux, va être malgré lui mêlé à une série de meurtres particulièrement horribles. Il doit également faire face au tragique destin de sa sœur déséquilibrée et renfermée sur elle-même.</p>
+                    <p>L’action principale se déroule autour de Bourg-en-Bresse et sur l’A40, alternant scènes de ville et de montagne. Un bon mix entre intrigue policière et questionnement personnel. Une «&nbsp;autre&nbsp;» manière pour l’écriture de polars.</p>
+                  </div>
+                  <p class="meta">ISBN 9791042506032</p>
+                  <p class="prix">21&nbsp;€</p>
+                </div>
+              </article>
+
+              <article class="fiche" id="l-heritage-empoisonne" style="--light:#D9675C;--rr:-1deg;--i:2" data-rgb="217,103,92">
+                <a class="book" href="#l-heritage-empoisonne" data-livre="l-heritage-empoisonne"><img src="img/l-heritage-empoisonne.jpg" width="781" height="1100" alt="L’héritage empoisonné"></a>
+                <div class="fiche__texte">
+                  <p class="etiquette">Roman policier à suspense, 2026</p>
+                  <h3>L’héritage empoisonné</h3>
+                  <p class="accroche">À Thornfield Grange, la vérité a plusieurs visages, et le coupable désigné n’est peut-être pas le bon.</p>
+                  <div class="resume">
+                    <p>Devon, automne 1924. Au manoir de Thornfield Grange, battu par la pluie et les embruns, Lady Harriet Ashmore s’apprête à modifier son testament. Autour d’elle, une famille trop polie, trop silencieuse&nbsp;: un fils désabusé, une belle-fille au regard fuyant, une nièce trop attentive, un vieil ami au sourire calculé.</p>
+                    <p>Quand la secrétaire juridique et clerc de notaire Cecily Vane franchit le seuil de la demeure, elle croit n’avoir à régler que des affaires courantes. Elle se trompe.</p>
+                    <p>Entre secrets d’héritage, poison dissimulé et sourires d’apparat, Cecily devra apprendre à distinguer l’essentiel du mensonge. Un roman policier à suspense dans la grande tradition anglaise, où chaque silence devient une accusation.</p>
+                  </div>
+                  <p class="meta">ISBN 9791044328656</p>
+                  <p class="prix">16,90&nbsp;€</p>
+                </div>
+              </article>
+
+            </div>
+            <h2 class="rayon__plaque" id="rayon-polars">Thrillers et polars</h2>
+          </section>
+
+          <section class="rayon" style="--x:668;--y:248;--w:347;--h:178" aria-labelledby="rayon-histoire">
+            <div class="rayon__livres">
+
+              <article class="fiche" id="le-mal-est-certain" style="--light:#9CC4E0;--rr:-2deg;--i:3" data-rgb="156,196,224">
+                <a class="book" href="#le-mal-est-certain" data-livre="le-mal-est-certain"><img src="img/le-mal-est-certain.jpg" width="577" height="917" alt="Le mal est certain"></a>
+                <div class="fiche__texte">
+                  <p class="etiquette">Fiction historique et dystopie, 2025</p>
+                  <h3>Le mal est certain</h3>
+                  <p class="accroche">Êtes-vous prêt à percer le secret de l’humanité&nbsp;?</p>
+                  <div class="resume">
+                    <p>Un roman de type fiction historique et dystopie mettant en scène divers tableaux historiques à travers les siècles. Nous suivons le voyage d’une mystérieuse capsule qui transporte le secret de l’humanité.</p>
+                    <p>De l’Atlantide à la planète Mars, les histoires s’enchaînent et l’histoire est revisitée pour traduire le fil conducteur du roman&nbsp;: le Mal voyage et se reproduit au cours des époques. Mythes et énigmes permettent de dessiner notre futur, jusqu’à notre époque et bien au-delà.</p>
+                  </div>
+                  <p class="meta">ISBN 9791042519568</p>
+                  <p class="prix">21&nbsp;€</p>
+                </div>
+              </article>
+
+            </div>
+            <h2 class="rayon__plaque" id="rayon-histoire">Fiction historique</h2>
+          </section>
+
+          <section class="rayon" style="--x:668;--y:448;--w:344;--h:178" aria-labelledby="rayon-poesies">
+            <div class="rayon__livres">
+
+              <article class="fiche" id="mots-sur-maux" style="--light:#E8A36B;--rr:-1.5deg;--i:4" data-rgb="232,163,107">
+                <a class="book" href="#mots-sur-maux" data-livre="mots-sur-maux"><img src="img/mots-sur-maux.jpg" width="650" height="879" alt="Mots sur maux"></a>
+                <div class="fiche__texte">
+                  <p class="etiquette">Poésies contemporaines, 2026</p>
+                  <h3>Mots sur maux</h3>
+                  <p class="accroche">De courtes aventures textuelles où la pensée circule, les idées viennent et l’émotion surgit.</p>
+                  <div class="resume">
+                    <p>Laurent Blondeau vous propose de courts poèmes contemporains sur des sujets de société. Tantôt drôles, caustiques, dramatiques, mais ne laissant pas indifférent.</p>
+                    <p>Des rimes enchantées qui vous entraîneront, vous feront réfléchir, textes illustrés de gravures contextuelles. Une suite logique du premier recueil, étoffée de nouveaux sujets d’actualité.</p>
+                  </div>
+                  <p class="prix">12&nbsp;€</p>
+                </div>
+              </article>
+
+              <article class="fiche" id="des-mots-sur-les-maux" style="--light:#E0705F;--rr:1.5deg;--i:5" data-rgb="224,112,95">
+                <a class="book" href="#des-mots-sur-les-maux" data-livre="des-mots-sur-les-maux"><img src="img/des-mots-sur-les-maux.jpg" width="686" height="1024" alt="Des mots sur les maux"></a>
+                <div class="fiche__texte">
+                  <p class="etiquette">Poésies, 2025</p>
+                  <h3>Des mots sur les maux</h3>
+                  <p class="accroche">Des rimes enchantées qui vous feront réfléchir, rêver et challengeront vos émotions.</p>
+                  <div class="resume">
+                    <p>Un recueil de récits qui vous emmène dans la danse des mots, sublimes éléments chantants et racontant des histoires et des scénettes mignonnes et truculentes de notre époque.</p>
+                    <p>Des histoires de femmes, de guerre, d’animaux, de conflits, de nature, d’écologie, d’amitié, de perdition, de moments perdus et retrouvés. Chacun trouvera la sienne et saura résonner au rythme des vers proposés.</p>
+                  </div>
+                  <p class="meta">ISBN 9798275320107</p>
+                  <p class="prix">10,55&nbsp;€</p>
+                </div>
+              </article>
+
+            </div>
+            <h2 class="rayon__plaque" id="rayon-poesies">Poésies</h2>
+          </section>
+
+          <section class="rayon" style="--x:668;--y:648;--w:347;--h:192" aria-labelledby="rayon-devperso">
+            <div class="rayon__livres">
+
+              <article class="fiche" id="le-phare-interieur" style="--light:#D9A441;--rr:-1.5deg;--i:6" data-rgb="217,164,65">
+                <a class="book" href="#le-phare-interieur" data-livre="le-phare-interieur"><img src="img/le-phare-interieur.jpg" width="778" height="1100" alt="Le phare intérieur"></a>
+                <div class="fiche__texte">
+                  <p class="etiquette">Développement personnel, 2026</p>
+                  <h3>Le phare intérieur</h3>
+                  <p class="accroche">Un programme de 21 jours. 12 minutes par jour. Aucun matériel.</p>
+                  <div class="resume">
+                    <p>Un livre de développement personnel, qui relie 4 thématiques importantes de nos vies. Pas de religion, pas de magie, juste du bon sens et comment les intégrer, sans changer de vie, dans nos habitudes quotidiennes.</p>
+                    <p>Les quatre accords toltèques, le kriya yoga, l’instant présent et l’accueil de la mort comme un passage&nbsp;: quatre sagesses qui disent la même chose, trouver notre phare intérieur. Un livre, un programme en 21 jours, des exercices et des feuilles de notation pour marquer votre progression.</p>
+                  </div>
+                  <p class="meta">ISBN 9798190477887</p>
+                  <p class="prix">19&nbsp;€</p>
+                </div>
+              </article>
+
+            </div>
+            <h2 class="rayon__plaque" id="rayon-devperso">Développement personnel</h2>
+          </section>
+
+        </main>
+      </div>
+      <button class="retour" type="button">Revenir au bureau</button>
+      <p class="aide aide--biblio">Choisissez un livre pour l’ouvrir</p>
+    </section>
+
+  </div>
+
+  <header class="entete">
+    <h1>Laurent Blondeau</h1>
+    <nav class="menu" aria-label="Menu principal">
+      <a href="a-propos.html">À propos</a>
+      <a href="a-propos.html#contact">Contact</a>
+    </nav>
+  </header>
+  <canvas class="particules" aria-hidden="true"></canvas>
+</div>
+
+<dialog class="lecteur" id="lecteur">
+  <div class="lecteur__voile"></div>
+  <button class="lecteur__fermer" type="button">Refermer le livre</button>
+  <div class="ob-scene">
+    <div class="ob-decale">
+      <div class="ob">
+        <div class="ob-page ob-page--droite" tabindex="0">
+          <div class="ob-tete"></div>
+          <div class="ob-corps"></div>
+          <div class="ob-achat">
+            <p class="ob-prix"></p>
+            <button type="button" disabled>Ajouter au panier</button>
+            <p class="ob-note">La boutique ouvre bientôt. Livraison à domicile&nbsp;: 5&nbsp;€.</p>
+          </div>
+        </div>
+        <div class="ob-couv">
+          <img class="ob-face" src="data:," alt="">
+          <div class="ob-page ob-page--gauche"><div class="ob-tete"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script src="js/scene.js"></script>
+<script src="js/lecteur.js"></script>
+</body>
+</html>

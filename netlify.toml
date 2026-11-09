@@ -1,0 +1,13 @@
+# Site statique, sans étape de construction : Netlify publie le dossier site/ tel quel.
+[build]
+  publish = "site"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    # Préproduction : les moteurs de recherche ne doivent pas l'indexer. À retirer à l'ouverture.
+    X-Robots-Tag = "noindex"
