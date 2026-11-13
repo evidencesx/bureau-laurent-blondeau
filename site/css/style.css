@@ -121,7 +121,7 @@ h1, h2, h3, p { margin: 0; }
 /* Le cadre doré (image Canva détourée, 457 × 696) est posé sur le cuir, juste devant le rebord du fond,
    pieds visibles. La photo de Laurent passe derrière son ouverture ovale (mesurée : 14,7 % / 20,7 %, 69,2 % × 66 %). */
 .portrait {
-  position: absolute; left: calc(925 * var(--k)); top: calc(232 * var(--k)); width: calc(216 * var(--k)); height: calc(330 * var(--k)); display: block; z-index: 1;
+  position: absolute; left: calc(955 * var(--k)); top: calc(232 * var(--k)); width: calc(216 * var(--k)); height: calc(330 * var(--k)); display: block; z-index: 1;
 }
 .portrait::before { /* ombre de contact sur le cuir */
   content: ""; position: absolute; left: 0; right: -6%; bottom: -2.5%; height: 7%; border-radius: 50%;
@@ -129,7 +129,7 @@ h1, h2, h3, p { margin: 0; }
 }
 .portrait__photo { /* tirage ancien sous verre ; le fond blanc de la photo se prolonge au-dessus de la tête */
   position: absolute; left: 14.25%; top: 20.3%; width: 70.1%; height: 66.8%; border-radius: 50%; overflow: hidden; background: #FFF;
-  filter: grayscale(1) sepia(.75) contrast(.88) brightness(.45) blur(.3px); transition: filter .5s ease;
+  filter: sepia(.18) saturate(.9) contrast(.92) brightness(.56) blur(.25px); transition: filter .5s ease;
 }
 /* Cadrage d'un portrait ovale : tête entière avec de l'air au-dessus, yeux vers 40 % de la hauteur, épaules en bas. */
 .portrait__photo img { position: absolute; left: 50%; bottom: 0; width: 118%; height: auto; max-width: none; transform: translateX(-51.5%); }
@@ -141,11 +141,11 @@ h1, h2, h3, p { margin: 0; }
     radial-gradient(ellipse at 50% 46%, rgba(0, 0, 0, 0) 42%, rgba(40, 25, 10, .7) 100%);
 }
 .portrait__cadre { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; filter: brightness(.7) saturate(.85) drop-shadow(calc(6 * var(--k)) calc(4 * var(--k)) calc(6 * var(--k)) rgba(0, 0, 0, .55)); transition: filter .5s ease; }
-.portrait:hover .portrait__photo, .portrait:focus-visible .portrait__photo { filter: grayscale(1) sepia(.75) contrast(.9) brightness(.66) blur(.3px); }
+.portrait:hover .portrait__photo, .portrait:focus-visible .portrait__photo { filter: sepia(.12) saturate(.95) contrast(.94) brightness(.74) blur(.25px); }
 .portrait:hover .portrait__cadre, .portrait:focus-visible .portrait__cadre { filter: brightness(.85) saturate(.9) drop-shadow(calc(6 * var(--k)) calc(4 * var(--k)) calc(6 * var(--k)) rgba(0, 0, 0, .55)); }
 
 /* ---------- La plaque « Contact », comme une plaque de bureau en laiton sur son socle ---------- */
-.plaque { position: absolute; left: calc(1150 * var(--k)); top: calc(489 * var(--k)); width: calc(186 * var(--k)); height: calc(42 * var(--k)); display: block; text-decoration: none; filter: brightness(.8); transition: filter .4s ease; }
+.plaque { position: absolute; left: calc(1185 * var(--k)); top: calc(489 * var(--k)); width: calc(186 * var(--k)); height: calc(42 * var(--k)); display: block; text-decoration: none; filter: brightness(.8); transition: filter .4s ease; }
 .plaque::before { /* socle en noyer, et son ombre sur le cuir */
   content: ""; position: absolute; left: -3%; right: -3%; bottom: 0; height: 24%;
   background: linear-gradient(180deg, #5A3A1E, #3A2412 45%, #1E120A);
@@ -180,8 +180,41 @@ h1, h2, h3, p { margin: 0; }
 .parchemin:hover::before, .parchemin:focus-visible::before { opacity: 1; }
 .parchemin:hover .parchemin__etiquette, .parchemin:focus-visible .parchemin__etiquette { opacity: 1; }
 
+/* ---------- Le tableau des salons (image Canva détourée, 640 × 589) ---------- */
+.tableau {
+  position: absolute; left: calc(262 * var(--k)); top: calc(232 * var(--k)); width: calc(340 * var(--k)); height: calc(313 * var(--k)); display: block; text-decoration: none;
+  filter: brightness(.7) saturate(.9) drop-shadow(calc(9 * var(--k)) calc(5 * var(--k)) calc(9 * var(--k)) rgba(0, 0, 0, .6)); transition: filter .4s ease;
+}
+.tableau::before { /* ombre des pieds sur le cuir */
+  content: ""; position: absolute; left: 2%; right: 2%; bottom: -2%; height: 6%; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, .7), rgba(0, 0, 0, 0) 70%);
+}
+.tableau:hover, .tableau:focus-visible { filter: brightness(.92) saturate(.95) drop-shadow(calc(9 * var(--k)) calc(5 * var(--k)) calc(9 * var(--k)) rgba(0, 0, 0, .6)); }
+.tableau__fond { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+.tableau__liege { position: absolute; left: 8.75%; top: 8.2%; width: 82.65%; height: 61.4%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(14 * var(--k)); }
+.tableau__titre, .tableau__fiche, .liege__titre, .liege__sous-titre, .liege__notes > li, .liege__passes, .liege__note { position: relative; color: #2A1E10; box-shadow: 1px 3px 5px rgba(0, 0, 0, .45); }
+.tableau__titre { background: #F1E8D2; padding: calc(3 * var(--k)) calc(16 * var(--k)); transform: rotate(-2deg); font-family: var(--titre); font-size: calc(21 * var(--k)); line-height: 1.2; }
+.tableau__notes { display: flex; gap: calc(12 * var(--k)); }
+.tableau__fiche { display: flex; flex-direction: column; width: calc(96 * var(--k)); padding: calc(6 * var(--k)) calc(7 * var(--k)); background: #ECE2CB; font-family: var(--etiquette); font-size: calc(11 * var(--k)); line-height: 1.15; letter-spacing: .04em; transform: rotate(2deg); }
+.tableau__fiche + .tableau__fiche { transform: rotate(-1.5deg); background: #F3EBD9; }
+.tableau__fiche b { font-family: var(--titre); font-weight: 400; font-size: calc(15 * var(--k)); }
+/* Punaise : une tête ronde avec son reflet */
+.tableau__titre::before, .tableau__fiche::before, .liege__titre::before, .liege__notes > li::before, .liege__passes::before, .liege__note::before {
+  content: ""; position: absolute; left: 50%; top: 0; width: var(--punaise, 8px); height: var(--punaise, 8px); border-radius: 50%; transform: translate(-50%, -30%);
+  background: radial-gradient(circle at 35% 30%, #FF8A7A, #B3261E 55%, #5E0F0A); box-shadow: 1px 2px 2px rgba(0, 0, 0, .5);
+}
+.tableau__titre, .tableau__fiche { --punaise: calc(9 * var(--k)); }
+.tableau__fiche + .tableau__fiche::before { background: radial-gradient(circle at 35% 30%, #FFF2B0, #C9A033 55%, #6B4E10); }
+
+/* ---------- La pile de journaux (image Canva détourée) ---------- */
+.journaux { position: absolute; left: calc(175 * var(--k)); top: calc(572 * var(--k)); width: calc(370 * var(--k)); height: calc(263 * var(--k)); display: block; filter: brightness(.62) saturate(.8) drop-shadow(calc(10 * var(--k)) calc(8 * var(--k)) calc(10 * var(--k)) rgba(0, 0, 0, .65)); transition: filter .4s ease; }
+.journaux:hover, .journaux:focus-visible { filter: brightness(.85) saturate(.9) drop-shadow(calc(10 * var(--k)) calc(8 * var(--k)) calc(10 * var(--k)) rgba(0, 0, 0, .65)); }
+.journaux__fond { width: 100%; height: 100%; max-width: none; }
+.plaque.plaque--presse { left: calc(500 * var(--k)); top: calc(770 * var(--k)); width: calc(130 * var(--k)); height: calc(36 * var(--k)); z-index: 1; }
+.plaque--presse .plaque__laiton { font-size: calc(16 * var(--k)); }
+
 /* ---------- La pile de livres, en volume ---------- */
-.pile { position: absolute; left: calc(760 * var(--k)); top: calc(655 * var(--k)); width: 0; height: 0; perspective: calc(1500 * var(--k)); perspective-origin: calc(80 * var(--k)) calc(-183 * var(--k)); }
+.pile { position: absolute; left: calc(795 * var(--k)); top: calc(655 * var(--k)); width: 0; height: 0; perspective: calc(1500 * var(--k)); perspective-origin: calc(80 * var(--k)) calc(-183 * var(--k)); }
 .pile__plan { position: absolute; left: 0; top: 0; transform-style: preserve-3d; transform: rotateX(67deg) rotateZ(-4deg) scale3d(1.2, 1.2, 1.2); }
 .pile__ombre { position: absolute; left: 0; top: 0; width: calc(340 * var(--k)); height: calc(260 * var(--k)); transform: translate(-46%, -44%); border-radius: 50%; background: radial-gradient(ellipse, rgba(0, 0, 0, .85), rgba(0, 0, 0, .35) 45%, rgba(0, 0, 0, 0) 72%); }
 .tome {
@@ -193,8 +226,9 @@ h1, h2, h3, p { margin: 0; }
 .tome > span { position: absolute; }
 .tome__dessus, .tome__tranche { display: block; }
 .tome__dessus { inset: 0; transform: translateZ(calc(var(--e) * var(--k))); overflow: hidden; background: linear-gradient(90deg, rgba(255, 170, 90, .14), rgba(0, 0, 0, .25)), var(--c); }
-.tome--dessus .tome__dessus img { position: absolute; left: 50%; top: 50%; width: calc(var(--p) * var(--k)); height: calc(var(--l) * var(--k)); max-width: none; transform: translate(-50%, -50%) rotate(-90deg); filter: brightness(.82); }
-.tome--dessus .tome__dessus::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255, 175, 90, .16), rgba(0, 0, 0, .28)); }
+.tome__dessus img { position: absolute; left: 50%; top: 50%; width: calc(var(--p) * var(--k)); height: calc(var(--l) * var(--k)); max-width: none; transform: translate(-50%, -50%) rotate(-90deg); object-fit: cover; filter: brightness(.68); }
+.tome--dessus .tome__dessus img { filter: brightness(.82); } /* le livre du dessus reçoit toute la lumière */
+.tome__dessus::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255, 175, 90, .16), rgba(0, 0, 0, .28)); }
 .tome__dos {
   left: 0; top: calc((var(--p) - var(--e)) * var(--k)); width: 100%; height: calc(var(--e) * var(--k));
   transform-origin: bottom; transform: rotateX(-90deg);
@@ -272,7 +306,7 @@ h1, h2, h3, p { margin: 0; }
 .apropos > * { max-width: 1100px; width: 100%; margin-inline: auto; }
 .apropos h1, .apropos h2 { font-weight: 200; font-size: clamp(34px, 5vw, 55px); line-height: 1.1; }
 .auteur { display: flex; flex-wrap: wrap; gap: 34px 89px; align-items: center; }
-.auteur > img { flex: 1 1 233px; min-width: 0; max-width: 377px; filter: grayscale(1) sepia(.3) contrast(1.05) brightness(.86); }
+.auteur > img { flex: 1 1 233px; min-width: 0; max-width: 377px; filter: sepia(.1) contrast(1.02) brightness(.92); }
 .auteur__texte { flex: 1.618 1 377px; min-width: 0; display: flex; flex-direction: column; gap: 21px; }
 .auteur__texte p { max-width: 34em; }
 .auteur__citation { font-style: italic; font-weight: 200; font-size: clamp(34px, 4vw, 55px); line-height: 1.15; }
@@ -284,15 +318,77 @@ h1, h2, h3, p { margin: 0; }
 .pied { padding: 21px var(--marge) 34px; }
 .pied__note { font-size: 16px; color: var(--cendre); }
 
+/* ---------- Le tableau et le journal, en grand ---------- */
+.panneau { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: none; color: var(--encre); overflow: hidden; }
+.panneau::backdrop { background: transparent; }
+.panneau__voile { position: absolute; inset: 0; background: radial-gradient(circle at 50% 46%, rgba(255, 170, 80, .18), rgba(255, 170, 80, 0) 60%), rgba(12, 9, 7, .62); -webkit-backdrop-filter: blur(13px); backdrop-filter: blur(13px); }
+.panneau__scene { position: absolute; inset: 0; display: grid; place-items: center; padding-top: 34px; perspective: 2200px; pointer-events: none; }
+.panneau__objet { position: relative; pointer-events: auto; }
+
+/* Le tableau de liège : les fiches épinglées sont lisibles ; le liège défile s'il y en a beaucoup. */
+.liege { width: min(94vw, calc((100dvh - 80px) * 1.0866), 1100px); aspect-ratio: 640 / 589; }
+.liege__fond { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; filter: drop-shadow(0 34px 44px rgba(0, 0, 0, .6)); }
+.liege__surface {
+  position: absolute; left: 8.75%; top: 8.2%; width: 82.65%; height: 61.4%; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #8A5A2B transparent;
+  container-type: size; display: flex; flex-direction: column; align-items: center; gap: max(8px, 2.6cqh); padding: 3% 3% 2.5%;
+  font-size: max(13px, 2.1cqw); line-height: 1.3;
+}
+.liege__titre { background: #F3EBD8; padding: .15em 1.1em .2em; transform: rotate(-1.5deg); font-weight: 200; font-size: max(24px, 5.6cqw); line-height: 1.1; --punaise: max(10px, 1.6cqw); }
+.liege__sous-titre { margin-top: -1.2cqh; padding: .2em .9em; background: #E7DCC2; transform: rotate(1deg); font-family: var(--etiquette); font-size: max(12px, 1.8cqw); letter-spacing: .16em; text-transform: uppercase; }
+.liege__notes { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: max(10px, 2.4cqw); }
+.liege__notes > li { --punaise: max(9px, 1.4cqw); display: flex; flex-direction: column; gap: .2em; width: max(124px, 21.5cqw); padding: 1.1em .9em .8em; background: #F6EFDD; transform: rotate(-2deg); font-family: var(--etiquette); font-size: max(13px, 2.5cqw); letter-spacing: .05em; }
+.liege__notes > li:nth-child(2n) { transform: rotate(1.6deg); background: #EFE4CC; }
+.liege__notes > li:nth-child(3n) { transform: rotate(-.6deg); background: #F3E9D3; }
+.liege__notes > li:nth-child(2n)::before { background: radial-gradient(circle at 35% 30%, #FFF2B0, #C9A033 55%, #6B4E10); }
+.liege__notes time { font-family: var(--titre); font-weight: 400; font-size: max(16px, 3.1cqw); line-height: 1.1; letter-spacing: 0; }
+.liege__notes > .liege__vide { width: auto; font-family: var(--titre); font-style: italic; }
+.liege__passes { --punaise: max(9px, 1.3cqw); width: min(100%, 80cqw); padding: 1em 1.3em .9em; background: #E9DEC4; transform: rotate(.8deg); }
+.liege__passes h3 { font-family: var(--etiquette); font-weight: 500; font-size: max(12px, 1.7cqw); letter-spacing: .16em; text-transform: uppercase; color: #5A4630; margin-bottom: .4em; }
+.liege__passes ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(max(120px, 17cqw), 1fr)); gap: .6em 1.4em; font-family: var(--etiquette); font-size: max(12px, 2cqw); letter-spacing: .04em; line-height: 1.2; }
+.liege__passes li { break-inside: avoid; }
+.liege__passes time { display: block; font-family: var(--titre); letter-spacing: 0; color: #5A4630; }
+.liege__note { --punaise: max(8px, 1.2cqw); padding: .5em 1em; background: #F1E8D2; transform: rotate(-1deg); font-style: italic; font-size: max(13px, 1.8cqw); }
+.liege__note a { color: #7A3B12; }
+
+/* Le journal : la moitié haute arrive, puis le bas se déplie. */
+.gazette { --gw: min(92vw, 680px, calc((100dvh - 100px) / 1.32)); width: var(--gw); height: calc(var(--gw) * 1.32); transform-style: preserve-3d; transform-origin: 50% 25%; }
+.gazette__haut, .gazette__face, .gazette__dos {
+  background: linear-gradient(180deg, rgba(120, 95, 60, .08), rgba(120, 95, 60, 0) 30%), #EDE6D4;
+  box-shadow: inset 0 0 calc(var(--gw) * .06) rgba(110, 85, 50, .25);
+}
+.gazette__haut { position: absolute; left: 0; top: 0; width: 100%; height: 50%; transform: translateZ(1px); container-type: inline-size; padding: 3.2% 5% 1.5%; display: flex; flex-direction: column; justify-content: space-between; gap: .5em; overflow: hidden; }
+.gazette__bas { position: absolute; left: 0; top: 50%; width: 100%; height: 50%; transform-origin: 50% 0; transform-style: preserve-3d; }
+.gazette__face, .gazette__dos { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.gazette__face { container-type: inline-size; padding: 3% 5% 3%; overflow-y: auto; scrollbar-width: thin; border-top: 1px solid rgba(60, 45, 25, .25); }
+.gazette__dos { transform: rotateX(180deg); background: repeating-linear-gradient(180deg, rgba(40, 32, 20, .16) 0 1px, rgba(0, 0, 0, 0) 1px 7px), #E6DECB; }
+.gazette, .gazette a { color: #1E1A14; }
+.gazette__bandeau { display: flex; justify-content: space-between; padding-bottom: 1cqw; border-bottom: 1px solid #1E1A14; font-family: var(--etiquette); font-size: max(10px, 2.1cqw); letter-spacing: .14em; text-transform: uppercase; }
+.gazette__titre { font-family: var(--titre); font-weight: 400; font-size: max(26px, 8.6cqw); line-height: 1; text-align: center; letter-spacing: -.01em; }
+.gazette__devise { padding: .5cqw 0 1cqw; border-top: 3px double #1E1A14; border-bottom: 1px solid #1E1A14; font-style: italic; font-size: max(12px, 2.6cqw); text-align: center; }
+.gazette__une { display: flex; flex-direction: column; gap: 1.2cqw; }
+.gazette__une h3 { font-family: var(--titre); font-weight: 400; font-size: max(17px, 4.3cqw); line-height: 1.08; }
+.gazette__chapo { font-size: max(12px, 2.7cqw); line-height: 1.35; }
+.gazette__rubrique { font-family: var(--etiquette); font-size: max(11px, 2.3cqw); letter-spacing: .14em; text-transform: uppercase; color: #6A4A28; }
+.gazette__rubrique--section { padding-bottom: 1cqw; margin-bottom: 1.5cqw; border-bottom: 1px solid #1E1A14; text-align: center; color: #1E1A14; }
+.gazette__lien, .gazette__articles a { align-self: flex-start; font-family: var(--etiquette); font-size: max(12px, 2.4cqw); letter-spacing: .1em; text-transform: uppercase; text-underline-offset: 3px; }
+.gazette__articles { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0 5cqw; }
+.gazette__articles li { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: .2em 1em; padding: 1.6cqw 0; border-bottom: 1px solid rgba(30, 26, 20, .3); }
+.gazette__journal { font-family: var(--titre); font-size: max(15px, 3.4cqw); line-height: 1.1; }
+.gazette__annee { font-family: var(--etiquette); font-size: max(12px, 2.4cqw); letter-spacing: .1em; }
+.gazette__articles a { grid-column: 1 / -1; }
+.gazette__contact { margin-top: 2.5cqw; font-size: max(12px, 2.4cqw); font-style: italic; }
+.gazette a:hover { color: #8A3A10; }
+@container (max-width: 420px) { .gazette__articles { grid-template-columns: 1fr; } }
+
 /* ---------- Le livre ouvert ---------- */
 .lecteur { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: none; color: var(--encre); overflow: hidden; }
 .lecteur::backdrop { background: transparent; }
 .lecteur__voile { position: absolute; inset: 0; background: radial-gradient(circle at 50% 46%, rgba(255, 170, 80, .2), rgba(255, 170, 80, 0) 60%), rgba(12, 9, 7, .6); -webkit-backdrop-filter: blur(13px); backdrop-filter: blur(13px); }
-.lecteur__fermer {
+.panneau__fermer, .lecteur__fermer {
   position: absolute; z-index: 3; top: 13px; right: 13px; min-height: 44px; padding: 8px 21px; border: 1px solid rgba(241, 232, 213, .55); background: rgba(14, 10, 8, .75); color: var(--papier);
   font-family: var(--etiquette); font-size: 21px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer;
 }
-.lecteur__fermer:hover { background: var(--papier); color: var(--encre); }
+.panneau__fermer:hover, .lecteur__fermer:hover { background: var(--papier); color: var(--encre); }
 .ob-scene { position: absolute; inset: 0; display: grid; place-items: center; perspective: 2400px; pointer-events: none; }
 .ob-decale, .ob { transform-style: preserve-3d; }
 .ob { position: relative; width: var(--pw); height: var(--ph); pointer-events: auto; }
@@ -333,7 +429,17 @@ h1, h2, h3, p { margin: 0; }
   .aide--biblio { display: none; }
   .accueil .entete { flex-wrap: nowrap; padding-inline: 16px; }
   .accueil .entete h1 { font-size: 21px; letter-spacing: .14em; }
-  .accueil .menu a[href$="#contact"] { display: none; }
+  .accueil .menu a[href$="#contact"], .accueil .menu a[href="a-propos.html"] { display: none; }
+  .accueil .menu { gap: 0 16px; font-size: 16px; letter-spacing: .14em; }
+  .pile { left: calc(760 * var(--k)); }
+  /* Le tableau en grand, en hauteur : l'image sert de cadre (coins et pieds intacts, côtés étirés) */
+  .liege { --s: calc(94vw / 640); width: 94vw; height: calc(100dvh - 96px); aspect-ratio: auto; border-style: solid;
+    border-width: calc(48 * var(--s)) calc(55 * var(--s)) calc(179 * var(--s)) calc(56 * var(--s));
+    border-image: url("../img/tableau-liege.png") 48 55 179 56 fill stretch; filter: drop-shadow(0 24px 30px rgba(0, 0, 0, .6)); }
+  .liege__fond { display: none; }
+  .liege__surface { inset: 0; width: auto; height: auto; }
+  .liege__notes > li { width: 100%; }
+  .gazette { height: calc(100dvh - 110px); } /* page plus haute : la une tient au-dessus du pli */
   .retour { font-size: 18px; }
   .retour { left: 50%; transform: translateX(-50%); }
   .pile__etiquette { font-size: 17px; }

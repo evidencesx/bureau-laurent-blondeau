@@ -31,6 +31,21 @@
           <img class="portrait__cadre" src="img/cadre-dore.png" width="457" height="696" alt="">
         </a>
 
+        <!-- Le tableau des salons : au clic, il vient vers nous en grand -->
+        <a class="tableau" href="#evenements" data-panneau="evenements" aria-label="Évènements : les salons et dédicaces de Laurent Blondeau">
+          <img class="tableau__fond" src="img/tableau-liege.png" width="640" height="589" alt="">
+          <span class="tableau__liege" aria-hidden="true">
+            <span class="tableau__titre">Évènements</span>
+            <span class="tableau__notes"></span>
+          </span>
+        </a>
+
+        <!-- La pile de journaux : au clic, un journal se déplie -->
+        <a class="journaux" href="#presse" data-panneau="presse" aria-label="Presse : les articles sur Laurent Blondeau">
+          <img class="journaux__fond" src="img/journaux.png" width="760" height="541" alt="">
+        </a>
+        <a class="plaque plaque--presse" href="#presse" data-panneau="presse" tabindex="-1" aria-hidden="true"><span class="plaque__laiton">Presse</span></a>
+
         <a class="plaque" href="a-propos.html#contact"><span class="plaque__laiton">Contact</span></a>
 
         <a class="parchemin" href="a-propos.html#contact" tabindex="-1" aria-hidden="true"><span class="parchemin__etiquette">Écrire à l’auteur</span></a>
@@ -40,27 +55,27 @@
           <div class="pile__plan">
             <span class="pile__ombre"></span>
             <button class="tome" type="button" data-livre="le-phare-interieur" style="--l:277;--p:196;--e:14;--z:0;--dx:4;--dy:-6;--r:3deg;--c:#16203A;--t:#D9A441">
-              <span class="tome__dessus"></span><span class="tome__dos"><span>Le phare intérieur</span><small>L. Blondeau</small></span><span class="tome__tranche"></span>
+              <span class="tome__dessus"><img src="img/le-phare-interieur.jpg" alt=""></span><span class="tome__dos"><span>Le phare intérieur</span><small>L. Blondeau</small></span><span class="tome__tranche"></span>
               <span class="visuellement-cache">Le phare intérieur</span>
             </button>
             <button class="tome" type="button" data-livre="l-heritage-empoisonne" style="--l:211;--p:150;--e:24;--z:14;--dx:-10;--dy:4;--r:-5deg;--c:#141110;--t:#C9A764">
-              <span class="tome__dessus"></span><span class="tome__dos"><span>L’héritage empoisonné</span><small>L. Blondeau</small></span><span class="tome__tranche"></span>
+              <span class="tome__dessus"><img src="img/l-heritage-empoisonne.jpg" alt=""></span><span class="tome__dos"><span>L’héritage empoisonné</span><small>L. Blondeau</small></span><span class="tome__tranche"></span>
               <span class="visuellement-cache">L’héritage empoisonné</span>
             </button>
             <button class="tome" type="button" data-livre="urbex-codex" style="--l:210;--p:136;--e:22;--z:38;--dx:8;--dy:-2;--r:4deg;--c:#1D1B19;--t:#C9C2B4">
-              <span class="tome__dessus"></span><span class="tome__dos"><span>Urbex Codex</span><small>L. Blondeau</small></span><span class="tome__tranche"></span>
+              <span class="tome__dessus"><img src="img/urbex-codex.jpg" alt=""></span><span class="tome__dos"><span>Urbex Codex</span><small>L. Blondeau</small></span><span class="tome__tranche"></span>
               <span class="visuellement-cache">Urbex Codex</span>
             </button>
             <button class="tome" type="button" data-livre="l-autre" style="--l:210;--p:132;--e:24;--z:60;--dx:-4;--dy:6;--r:-2deg;--c:#0C0F11;--t:#7FB8A0">
-              <span class="tome__dessus"></span><span class="tome__dos"><span>L’Autre</span><small>L. Blondeau</small></span><span class="tome__tranche"></span>
+              <span class="tome__dessus"><img src="img/l-autre.jpg" alt=""></span><span class="tome__dos"><span>L’Autre</span><small>L. Blondeau</small></span><span class="tome__tranche"></span>
               <span class="visuellement-cache">L’Autre</span>
             </button>
             <button class="tome" type="button" data-livre="le-mal-est-certain" style="--l:210;--p:132;--e:20;--z:84;--dx:6;--dy:-4;--r:6deg;--c:#22332F;--t:#DCE6E0">
-              <span class="tome__dessus"></span><span class="tome__dos"><span>Le mal est certain</span><small>L. Blondeau</small></span><span class="tome__tranche"></span>
+              <span class="tome__dessus"><img src="img/le-mal-est-certain.jpg" alt=""></span><span class="tome__dos"><span>Le mal est certain</span><small>L. Blondeau</small></span><span class="tome__tranche"></span>
               <span class="visuellement-cache">Le mal est certain</span>
             </button>
             <button class="tome" type="button" data-livre="des-mots-sur-les-maux" style="--l:202;--p:135;--e:9;--z:104;--dx:-6;--dy:2;--r:-7deg;--c:#B0433A;--t:#FFFFFF">
-              <span class="tome__dessus"></span><span class="tome__dos"><span>Des mots sur les maux</span></span><span class="tome__tranche"></span>
+              <span class="tome__dessus"><img src="img/des-mots-sur-les-maux.jpg" alt=""></span><span class="tome__dos"><span>Des mots sur les maux</span></span><span class="tome__tranche"></span>
               <span class="visuellement-cache">Des mots sur les maux</span>
             </button>
             <button class="tome tome--dessus" type="button" data-livre="mots-sur-maux" style="--l:200;--p:148;--e:10;--z:113;--dx:2;--dy:0;--r:3deg;--c:#1E2C4F;--t:#FFFFFF">
@@ -231,6 +246,8 @@
   <header class="entete">
     <h1>Laurent Blondeau</h1>
     <nav class="menu" aria-label="Menu principal">
+      <a href="#evenements" data-panneau="evenements">Évènements</a>
+      <a href="#presse" data-panneau="presse">Presse</a>
       <a href="a-propos.html">À propos</a>
       <a href="a-propos.html#contact">Contact</a>
     </nav>
@@ -262,7 +279,80 @@
   </div>
 </dialog>
 
+<!-- Le tableau des salons en grand. Les dates viennent de l'ancien site (laurentblondeau.fr/salons) ;
+     pour en ajouter une, on ajoute une ligne : le script range seul les dates passées. -->
+<dialog class="panneau" id="evenements" aria-labelledby="evenements-titre">
+  <div class="panneau__voile"></div>
+  <button class="panneau__fermer" type="button">Reposer le tableau</button>
+  <div class="panneau__scene">
+    <div class="panneau__objet liege">
+      <img class="liege__fond" src="img/tableau-liege.png" width="640" height="589" alt="">
+      <div class="liege__surface">
+        <h2 class="liege__titre" id="evenements-titre">Évènements</h2>
+        <p class="liege__sous-titre">Rencontres, salons et dédicaces</p>
+        <ol class="liege__notes">
+          <li data-date="2026-05-30"><time datetime="2026-05-30">30 mai 2026</time> Romilly-sur-Andelle (27)</li>
+          <li data-date="2026-06-14"><time datetime="2026-06-14">14 juin 2026</time> Luc-sur-Mer (14)</li>
+          <li data-date="2026-07-12"><time datetime="2026-07-12">12 juillet 2026</time> Épieds (27)</li>
+          <li data-date="2026-07-14"><time datetime="2026-07-14">14 juillet 2026</time> Thiron-Gardais (28)</li>
+          <li data-date="2026-09-20"><time datetime="2026-09-20">20 septembre 2026</time> La Ferté-Vidame (28)</li>
+          <li data-date="2026-09-26"><time datetime="2026-09-26">26 septembre 2026</time> Le Mans (72)</li>
+          <li data-date="2026-10-04"><time datetime="2026-10-04">4 octobre 2026</time> Andé (27)</li>
+          <li data-date="2026-10-25"><time datetime="2026-10-25">25 octobre 2026</time> Saumur (49)</li>
+          <li data-date="2026-11-15"><time datetime="2026-11-15">15 novembre 2026</time> Saint-Arnoult-en-Yvelines (78)</li>
+          <li data-date="2026-11-28"><time datetime="2026-11-28">28 novembre 2026</time> Janville-en-Beauce (28)</li>
+          <li data-date="2027-02-07"><time datetime="2027-02-07">7 février 2027</time> Pierres (28)</li>
+          <li data-date="2027-02-27"><time datetime="2027-02-27">27 février 2027</time> Évry (91)</li>
+        </ol>
+        <div class="liege__passes" hidden>
+          <h3>Déjà venu à</h3>
+          <ol></ol>
+        </div>
+        <p class="liege__note">Une dédicace personnalisée&nbsp;? <a href="a-propos.html#contact">Écrivez à l’auteur</a>.</p>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<!-- Le journal de la revue de presse : il quitte la pile, vient au centre et se déplie.
+     Les articles (PDF) viennent de l'ancien site (laurentblondeau.fr/presse). -->
+<dialog class="panneau" id="presse" aria-labelledby="presse-titre">
+  <div class="panneau__voile"></div>
+  <button class="panneau__fermer" type="button">Replier le journal</button>
+  <div class="panneau__scene">
+    <div class="panneau__objet gazette">
+      <div class="gazette__haut">
+        <p class="gazette__bandeau"><span>Gallardon</span><span>Revue de presse</span><span>Édition permanente</span></p>
+        <h2 class="gazette__titre" id="presse-titre">La Gazette de l’auteur</h2>
+        <p class="gazette__devise">Laurent Blondeau dans les journaux</p>
+        <article class="gazette__une">
+          <p class="gazette__rubrique">Actu Chartres · 24 août 2022</p>
+          <h3>À l’écrit, peut-être bientôt à l’écran&nbsp;: le livre «&nbsp;Urbex Codex&nbsp;» se dévoile en Eure-et-Loir</h3>
+          <p class="gazette__chapo">«&nbsp;À Gallardon (Eure-et-Loir), un livre vient de voir le jour&nbsp;: le tout premier de Laurent Blondeau, le thriller "Urbex Codex", aux éditions Maïa.&nbsp;»</p>
+          <a class="gazette__lien" href="presse/actu28-2022.pdf" target="_blank" rel="noopener">Lire l’article</a>
+        </article>
+      </div>
+      <div class="gazette__bas">
+        <div class="gazette__face">
+          <p class="gazette__rubrique gazette__rubrique--section">Ils en ont parlé</p>
+          <ul class="gazette__articles">
+            <li><span class="gazette__journal">HEC Stories</span><span class="gazette__annee">2023</span><a href="presse/hec-stories-2023.pdf" target="_blank" rel="noopener">Lire l’article</a></li>
+            <li><span class="gazette__journal">HEC Yearbook</span><span class="gazette__annee">2024</span><a href="presse/hec-yearbook-2024.pdf" target="_blank" rel="noopener">Lire l’article</a></li>
+            <li><span class="gazette__journal">HEC Stories</span><span class="gazette__annee">2024</span><a href="presse/hec-stories-2024.pdf" target="_blank" rel="noopener">Lire l’article</a></li>
+            <li><span class="gazette__journal">L’Écho Républicain</span><span class="gazette__annee">2024</span><a href="presse/echo-republicain.pdf" target="_blank" rel="noopener">Lire l’article</a></li>
+            <li><span class="gazette__journal">Toutes les nouvelles 78</span><span class="gazette__annee">2024</span><a href="presse/toutes-les-nouvelles-2024.pdf" target="_blank" rel="noopener">Lire l’article</a></li>
+            <li><span class="gazette__journal">Toutes les nouvelles 78</span><span class="gazette__annee">2025</span><a href="presse/toutes-les-nouvelles-2025.pdf" target="_blank" rel="noopener">Lire l’article</a></li>
+          </ul>
+          <p class="gazette__contact">Journalistes&nbsp;: <a href="mailto:promotion.editions.maia@gmail.com">promotion.editions.maia@gmail.com</a></p>
+        </div>
+        <div class="gazette__dos" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+</dialog>
+
 <script src="js/scene.js"></script>
 <script src="js/lecteur.js"></script>
+<script src="js/panneaux.js"></script>
 </body>
 </html>
