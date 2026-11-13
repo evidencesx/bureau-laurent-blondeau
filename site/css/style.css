@@ -207,10 +207,10 @@ h1, h2, h3, p { margin: 0; }
 .tableau__fiche + .tableau__fiche::before { background: radial-gradient(circle at 35% 30%, #FFF2B0, #C9A033 55%, #6B4E10); }
 
 /* ---------- La pile de journaux (image Canva détourée) ---------- */
-.journaux { position: absolute; left: calc(175 * var(--k)); top: calc(572 * var(--k)); width: calc(370 * var(--k)); height: calc(263 * var(--k)); display: block; filter: brightness(.62) saturate(.8) drop-shadow(calc(10 * var(--k)) calc(8 * var(--k)) calc(10 * var(--k)) rgba(0, 0, 0, .65)); transition: filter .4s ease; }
+.journaux { position: absolute; left: calc(200 * var(--k)); top: calc(555 * var(--k)); width: calc(326 * var(--k)); height: calc(232 * var(--k)); display: block; filter: brightness(.62) saturate(.8) drop-shadow(calc(10 * var(--k)) calc(8 * var(--k)) calc(10 * var(--k)) rgba(0, 0, 0, .65)); transition: filter .4s ease; }
 .journaux:hover, .journaux:focus-visible { filter: brightness(.85) saturate(.9) drop-shadow(calc(10 * var(--k)) calc(8 * var(--k)) calc(10 * var(--k)) rgba(0, 0, 0, .65)); }
 .journaux__fond { width: 100%; height: 100%; max-width: none; }
-.plaque.plaque--presse { left: calc(500 * var(--k)); top: calc(770 * var(--k)); width: calc(130 * var(--k)); height: calc(36 * var(--k)); z-index: 1; }
+.plaque.plaque--presse { left: calc(478 * var(--k)); top: calc(750 * var(--k)); width: calc(130 * var(--k)); height: calc(36 * var(--k)); z-index: 1; }
 .plaque--presse .plaque__laiton { font-size: calc(16 * var(--k)); }
 
 /* ---------- La pile de livres, en volume ---------- */
