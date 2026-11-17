@@ -183,6 +183,7 @@ h1, h2, h3, p { margin: 0; }
 /* ---------- Le tableau des salons (image Canva détourée, 640 × 589) ---------- */
 .tableau {
   position: absolute; left: calc(262 * var(--k)); top: calc(232 * var(--k)); width: calc(340 * var(--k)); height: calc(313 * var(--k)); display: block; text-decoration: none;
+  transform: perspective(calc(1100 * var(--k))) rotateY(20deg); transform-origin: 50% 100%; /* tourné vers le centre du bureau */
   filter: brightness(.7) saturate(.9) drop-shadow(calc(9 * var(--k)) calc(5 * var(--k)) calc(9 * var(--k)) rgba(0, 0, 0, .6)); transition: filter .4s ease;
 }
 .tableau::before { /* ombre des pieds sur le cuir */
