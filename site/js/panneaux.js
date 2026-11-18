@@ -42,6 +42,43 @@
     });
   }
 
+  /* ---------- Le petit tableau est de trois quarts : on plaque le titre et les fiches sur le liège ----------
+     Les 4 coins du liège, en fraction de l'image : haut gauche, haut droit, bas droit, bas gauche. */
+  var COINS = [[0.2378, 0.0923], [0.873, 0.1161], [0.8811, 0.7351], [0.2541, 0.8244]];
+  var petit = document.querySelector('.tableau');
+  var surLiege = petit && petit.querySelector('.tableau__liege');
+  // Transformation projective qui envoie le rectangle w × h sur le quadrilatère q (résolution 8 × 8).
+  function projection(w, h, q) {
+    var src = [[0, 0], [w, 0], [w, h], [0, h]], A = [], B = [];
+    for (var i = 0; i < 4; i++) {
+      var x = src[i][0], y = src[i][1], X = q[i][0], Y = q[i][1];
+      A.push([x, y, 1, 0, 0, 0, -x * X, -y * X]); B.push(X);
+      A.push([0, 0, 0, x, y, 1, -x * Y, -y * Y]); B.push(Y);
+    }
+    for (var c = 0; c < 8; c++) { // élimination de Gauss avec pivot
+      var p = c;
+      for (var r = c + 1; r < 8; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+      var t = A[c]; A[c] = A[p]; A[p] = t; t = B[c]; B[c] = B[p]; B[p] = t;
+      for (r = 0; r < 8; r++) if (r !== c) {
+        var f = A[r][c] / A[c][c];
+        for (var k = c; k < 8; k++) A[r][k] -= f * A[c][k];
+        B[r] -= f * B[c];
+      }
+    }
+    var m = B.map(function (v, j) { return v / A[j][j]; }); // a b c d e f g h : X = (a x + b y + c) / (g x + h y + 1)
+    return 'matrix3d(' + [m[0], m[3], 0, m[6], m[1], m[4], 0, m[7], 0, 0, 1, 0, m[2], m[5], 0, 1].join(',') + ')';
+  }
+  function poserLiege() {
+    if (!surLiege || !petit.offsetWidth) return;
+    var W = petit.offsetWidth, H = petit.offsetHeight;
+    var q = COINS.map(function (c) { return [c[0] * W, c[1] * H]; });
+    surLiege.style.transform = projection(surLiege.offsetWidth, surLiege.offsetHeight, q);
+    surLiege.classList.add('pose');
+  }
+  poserLiege();
+  window.addEventListener('resize', poserLiege);
+  window.addEventListener('load', poserLiege);
+
   var panneaux = {};
   document.querySelectorAll('dialog.panneau').forEach(function (d) { panneaux[d.id] = d; });
   if (!Object.keys(panneaux).length || typeof HTMLDialogElement !== 'function') return; // sans <dialog> : les liens restent de simples ancres
@@ -107,7 +144,8 @@
       });
     } else {
       if (source) source.style.visibility = 'hidden';
-      vol = animer(objet, [{ transform: depart(objet, source) }, { transform: 'none' }], 900);
+      // Sur le bureau, le tableau est tourné vers le centre : il pivote face à nous en approchant.
+      vol = animer(objet, [{ transform: depart(objet, source) + (source ? ' rotateY(32deg)' : '') }, { transform: 'none' }], 900);
     }
     vol.then(function () { occupe = false; });
   }
@@ -128,7 +166,8 @@
       if (etat.source && !bas) etat.source.style.visibility = 'hidden';
       animer(voile, [{ opacity: 1 }, { opacity: 0 }], 550, 'ease');
       animer(fermer, [{ opacity: 1 }, { opacity: 0 }], 200, 'ease');
-      return animer(objet, [{ transform: 'none' }, { transform: vers + (bas ? ' rotate(-6deg)' : '') }], 650);
+      var tourne = bas ? ' rotate(-6deg)' : (vers.indexOf('translate(0px') === 0 ? '' : ' rotateY(32deg)');
+      return animer(objet, [{ transform: 'none' }, { transform: vers + tourne }], 650);
     }).then(function () {
       if (etat.source) { etat.source.style.visibility = ''; etat.source.classList.remove('journaux--pris'); }
       d.close();
