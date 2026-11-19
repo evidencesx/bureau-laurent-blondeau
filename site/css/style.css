@@ -180,10 +180,9 @@ h1, h2, h3, p { margin: 0; }
 .parchemin:hover::before, .parchemin:focus-visible::before { opacity: 1; }
 .parchemin:hover .parchemin__etiquette, .parchemin:focus-visible .parchemin__etiquette { opacity: 1; }
 
-/* ---------- Le tableau des salons, de trois quarts (image Canva détourée, 760 × 690) ----------
-   Le titre et les fiches sont plaqués sur le liège en perspective par panneaux.js (matrix3d calée sur ses 4 coins). */
+/* ---------- Le tableau des salons (image Canva détourée, 640 × 589) ---------- */
 .tableau {
-  position: absolute; left: calc(250 * var(--k)); top: calc(220 * var(--k)); width: calc(360 * var(--k)); height: calc(327 * var(--k)); display: block; text-decoration: none;
+  position: absolute; left: calc(262 * var(--k)); top: calc(232 * var(--k)); width: calc(340 * var(--k)); height: calc(313 * var(--k)); display: block; text-decoration: none;
   filter: brightness(.7) saturate(.9) drop-shadow(calc(9 * var(--k)) calc(5 * var(--k)) calc(9 * var(--k)) rgba(0, 0, 0, .6)); transition: filter .4s ease;
 }
 .tableau::before { /* ombre des pieds sur le cuir */
@@ -192,8 +191,7 @@ h1, h2, h3, p { margin: 0; }
 }
 .tableau:hover, .tableau:focus-visible { filter: brightness(.92) saturate(.95) drop-shadow(calc(9 * var(--k)) calc(5 * var(--k)) calc(9 * var(--k)) rgba(0, 0, 0, .6)); }
 .tableau__fond { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
-.tableau__liege.pose { visibility: visible; }
-.tableau__liege { position: absolute; left: 0; top: 0; width: calc(300 * var(--k)); height: calc(205 * var(--k)); transform-origin: 0 0; visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(14 * var(--k)); }
+.tableau__liege { position: absolute; left: 8.75%; top: 8.2%; width: 82.65%; height: 61.4%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(14 * var(--k)); }
 .tableau__titre, .tableau__fiche, .liege__titre, .liege__sous-titre, .liege__notes > li, .liege__passes, .liege__note { position: relative; color: #2A1E10; box-shadow: 1px 3px 5px rgba(0, 0, 0, .45); }
 .tableau__titre { background: #F1E8D2; padding: calc(3 * var(--k)) calc(16 * var(--k)); transform: rotate(-2deg); font-family: var(--titre); font-size: calc(21 * var(--k)); line-height: 1.2; }
 .tableau__notes { display: flex; gap: calc(12 * var(--k)); }
@@ -328,10 +326,10 @@ h1, h2, h3, p { margin: 0; }
 .panneau__objet { position: relative; pointer-events: auto; }
 
 /* Le tableau de liège : les fiches épinglées sont lisibles ; le liège défile s'il y en a beaucoup. */
-.liege { width: min(94vw, calc((100dvh - 90px) * 1.4066), 1200px); aspect-ratio: 640 / 455; } /* vu de près : les pieds sortent du champ */
+.liege { width: min(94vw, calc((100dvh - 80px) * 1.0866), 1100px); aspect-ratio: 640 / 589; }
 .liege__fond { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; filter: drop-shadow(0 34px 44px rgba(0, 0, 0, .6)); }
 .liege__surface {
-  position: absolute; left: 8.75%; top: 10.55%; width: 82.65%; height: 79.56%; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #8A5A2B transparent;
+  position: absolute; left: 8.75%; top: 8.2%; width: 82.65%; height: 61.4%; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #8A5A2B transparent;
   container-type: size; display: flex; flex-direction: column; align-items: center; gap: max(8px, 2.6cqh); padding: 3% 3% 2.5%;
   font-size: max(13px, 2.1cqw); line-height: 1.3;
 }
@@ -436,8 +434,8 @@ h1, h2, h3, p { margin: 0; }
   .pile { left: calc(760 * var(--k)); }
   /* Le tableau en grand, en hauteur : l'image sert de cadre (coins et pieds intacts, côtés étirés) */
   .liege { --s: calc(94vw / 640); width: 94vw; height: calc(100dvh - 96px); aspect-ratio: auto; border-style: solid;
-    border-width: calc(48 * var(--s)) calc(55 * var(--s)) calc(45 * var(--s)) calc(56 * var(--s));
-    border-image: url("../img/tableau-grand.png") 48 55 45 56 fill stretch; filter: drop-shadow(0 24px 30px rgba(0, 0, 0, .6)); }
+    border-width: calc(48 * var(--s)) calc(55 * var(--s)) calc(179 * var(--s)) calc(56 * var(--s));
+    border-image: url("../img/tableau-liege.png") 48 55 179 56 fill stretch; filter: drop-shadow(0 24px 30px rgba(0, 0, 0, .6)); }
   .liege__fond { display: none; }
   .liege__surface { inset: 0; width: auto; height: auto; }
   .liege__notes > li { width: 100%; }
