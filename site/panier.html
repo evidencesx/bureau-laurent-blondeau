@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panier · Laurent Blondeau</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23140E0A'/%3E%3Cpath d='M16 6c3 4 4 7 4 9a4 4 0 0 1-8 0c0-2 1-5 4-9z' fill='%23F2A54A'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="brume" aria-hidden="true"></canvas>
+
+<header class="entete">
+  <div class="entete__titre">
+    <p class="entete__nom"><a href="index.html">Laurent Blondeau</a></p>
+    <p class="entete__phrase">Tant qu’il y aura des lecteurs, il y aura des écrivains.</p>
+  </div>
+  <nav class="menu" aria-label="Menu principal">
+    <a href="index.html">Le bureau</a>
+    <a href="index.html#evenements">Évènements</a>
+    <a href="index.html#presse">Presse</a>
+    <a href="a-propos.html">À propos</a>
+    <a href="contact.html">Contact</a>
+    <a href="panier.html" class="menu__panier" aria-current="page">Panier<span class="menu__compte" hidden></span></a>
+  </nav>
+</header>
+
+<main class="apropos boutique">
+  <h1>Panier</h1>
+  <p class="formulaire__statut" id="statut-panier" role="status" hidden></p>
+
+  <div class="boutique__vide" id="panier-vide" hidden>
+    <p>Votre panier est vide.</p>
+    <p><a class="bouton bouton--clair" href="index.html#livres">Choisir un livre</a></p>
+  </div>
+
+  <div class="boutique__grille" id="panier-plein" hidden>
+    <section aria-labelledby="titre-livres">
+      <h2 class="visuellement-cache" id="titre-livres">Vos livres</h2>
+      <ul class="panier" id="lignes"></ul>
+      <dl class="totaux">
+        <div><dt>Livres</dt><dd id="sous-total"></dd></div>
+        <div><dt>Livraison <small>France métropolitaine, par commande</small></dt><dd id="livraison"></dd></div>
+        <div class="totaux__total"><dt>Total</dt><dd id="total"></dd></div>
+      </dl>
+    </section>
+
+    <!-- creer_commande (base) relit les vrais prix et réserve le stock, puis creer-paiement (serveur)
+         ouvre la page de paiement Stripe. Aucun montant ne part du navigateur. -->
+    <form class="formulaire" id="form-commande" novalidate>
+      <h2>Livraison</h2>
+      <div class="formulaire__ligne">
+        <label>Nom et prénom<input name="nom" autocomplete="name" required maxlength="120"></label>
+        <label>E-mail<input name="email" type="email" autocomplete="email" required maxlength="200"></label>
+      </div>
+      <label>Téléphone <small>facultatif, pour le transporteur</small><input name="telephone" type="tel" autocomplete="tel" maxlength="30"></label>
+      <label>Adresse<input name="adresse_ligne1" autocomplete="address-line1" required maxlength="200"></label>
+      <label>Complément <small>facultatif</small><input name="adresse_ligne2" autocomplete="address-line2" maxlength="200"></label>
+      <div class="formulaire__ligne">
+        <label>Code postal<input name="code_postal" autocomplete="postal-code" inputmode="numeric" pattern="[0-9]{5}" required maxlength="5"></label>
+        <label>Ville<input name="ville" autocomplete="address-level2" required maxlength="120"></label>
+      </div>
+      <p class="boutique__note">Livraison en France métropolitaine (Corse comprise) uniquement.</p>
+      <label class="case"><input type="checkbox" name="cgv" required> <span>J’ai lu et j’accepte les <a href="cgv.html" target="_blank">conditions générales de vente</a>.</span></label>
+      <button type="submit" class="bouton" id="bouton-payer">Payer</button>
+      <p class="boutique__note">Paiement sécurisé par Stripe : vos coordonnées bancaires ne passent jamais par ce site.</p>
+    </form>
+  </div>
+</main>
+
+<footer class="pied">
+  <p class="pied__note">© 2026 Laurent Blondeau · <a href="cgv.html">Conditions de vente</a> · <a href="mentions-legales.html">Mentions légales</a></p>
+</footer>
+
+<script src="js/scene.js"></script>
+<script src="js/achat.js"></script>
+<script type="module" src="js/pages/panier.js"></script>
+</body>
+</html>

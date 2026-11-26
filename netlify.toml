@@ -11,3 +11,10 @@
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
     # Préproduction : les moteurs de recherche ne doivent pas l'indexer. À retirer à l'ouverture.
     X-Robots-Tag = "noindex"
+
+# L'administration ne doit jamais être indexée, même après l'ouverture du site.
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-cache"

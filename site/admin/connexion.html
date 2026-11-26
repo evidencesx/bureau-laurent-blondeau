@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connexion · Administration</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23140E0A'/%3E%3Cpath d='M16 6c3 4 4 7 4 9a4 4 0 0 1-8 0c0-2 1-5 4-9z' fill='%23F2A54A'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="connexion">
+<main class="connexion__carte">
+  <p class="connexion__sur">Laurent Blondeau, écrivain</p>
+  <h1>Administration</h1>
+  <p>Saisissez votre adresse e-mail : vous recevez un lien qui vous connecte directement, sans mot de passe.</p>
+  <form id="form-connexion">
+    <label>Adresse e-mail<input id="email" type="email" autocomplete="email" required></label>
+    <button class="btn" id="btn-connexion">Recevoir le lien de connexion</button>
+  </form>
+  <p class="message" id="message" role="status" hidden></p>
+  <p class="petit"><a href="../index.html">← Revenir au site</a></p>
+</main>
+<script type="module">
+  import { baseConfiguree, base } from '../js/client.js';
+  const msg = document.getElementById('message');
+  const dire = (t, type) => { msg.textContent = t; msg.className = `message message--${type}`; msg.hidden = false; };
+  (async () => {
+    if (!baseConfiguree) { dire('La base n’est pas encore configurée (js/config.js).', 'erreur'); return; }
+    const sb = await base();
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) location.replace('index.html');
+  })();
+  document.getElementById('form-connexion').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btn-connexion');
+    btn.disabled = true; btn.textContent = 'Envoi…';
+    try {
+      const sb = await base();
+      const { error } = await sb.auth.signInWithOtp({
+        email: document.getElementById('email').value.trim(),
+        // Les inscriptions sont fermées dans Supabase : seules les adresses créées à l'avance reçoivent un lien.
+        options: { shouldCreateUser: false, emailRedirectTo: new URL('index.html', location.href).href },
+      });
+      if (error) throw error;
+      dire('C’est parti : ouvrez l’e-mail reçu et cliquez sur le lien. Pensez à regarder dans les indésirables.', 'ok');
+    } catch (err) {
+      dire('Le lien n’a pas pu être envoyé. Vérifiez l’adresse : seules les adresses autorisées peuvent se connecter.', 'erreur');
+      console.error(err);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Recevoir le lien de connexion';
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+/* Administration du site de Laurent Blondeau : clair et lisible, pensé aussi pour le téléphone. */
+:root { --fond: #F6F1E7; --carte: #FFFDF8; --texte: #22252B; --doux: #6A6B70; --bord: #DDD3C2; --accent: #8A3A10; --accent-clair: #F2A54A; --ok: #2E6B4F; --alerte: #B3261E; }
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--fond); color: var(--texte); font: 17px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+a { color: var(--accent); }
+h1 { font: 400 32px/1.15 Georgia, serif; margin: 0 0 16px; }
+h2 { font: 400 22px/1.2 Georgia, serif; margin: 28px 0 10px; }
+p { margin: 0; }
+img { max-width: 100%; }
+
+/* Barre du haut */
+.barre { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; padding: 10px 20px; background: #1C1612; color: #F1E8D5; }
+.barre a { color: inherit; text-decoration: none; }
+.barre__nom { font: 400 20px Georgia, serif; }
+.onglets { display: flex; flex-wrap: wrap; gap: 4px; flex: 1; }
+.onglets a { padding: 8px 12px; border-radius: 6px; }
+.onglets a:hover, .onglets a[aria-current] { background: rgba(242, 165, 74, .2); color: var(--accent-clair); }
+.barre__compte { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; font-size: 14px; opacity: .9; }
+.pastille { display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-left: 6px; padding: 0 6px; border-radius: 10px; background: var(--accent-clair); color: #1C1612; font-size: 12px; font-weight: 700; }
+.pastille[hidden] { display: none; }
+
+.vue { max-width: 1040px; margin: 0 auto; padding: 28px 20px 80px; }
+.chargement { color: var(--doux); }
+.aide { color: var(--doux); font-size: 15px; margin-bottom: 16px; max-width: 46em; }
+.petit { color: var(--doux); font-size: 14px; }
+.vide { list-style: none; padding: 20px; color: var(--doux); text-align: center; border: 1px dashed var(--bord); border-radius: 10px; }
+
+/* Boutons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 8px 18px; border: 1px solid var(--accent); border-radius: 8px; background: var(--accent); color: #fff; font: 600 16px system-ui, sans-serif; cursor: pointer; text-decoration: none; }
+.btn:hover { filter: brightness(1.1); }
+.btn:disabled { opacity: .55; cursor: wait; }
+.btn--clair { background: transparent; color: var(--accent); }
+.btn--danger { border-color: var(--alerte); background: var(--alerte); }
+.btn--danger.btn--clair { background: transparent; color: var(--alerte); }
+.lien { border: 0; background: none; padding: 6px 4px; color: var(--accent); font: inherit; font-size: 15px; text-decoration: underline; cursor: pointer; }
+.lien--danger { color: var(--alerte); }
+.btn-rond { width: 36px; height: 36px; border: 1px solid var(--bord); border-radius: 50%; background: var(--carte); font-size: 18px; cursor: pointer; }
+.btn-rond:disabled { opacity: .35; cursor: default; }
+
+/* Champs */
+label { display: flex; flex-direction: column; gap: 4px; font-weight: 600; font-size: 15px; }
+label small { font-weight: 400; color: var(--doux); }
+input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--bord); border-radius: 8px; background: #fff; color: var(--texte); font: 16px system-ui, sans-serif; }
+textarea { resize: vertical; line-height: 1.5; }
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent-clair); outline-offset: 0; border-color: transparent; }
+.interrupteur { flex-direction: row; align-items: center; gap: 10px; align-self: end; min-height: 44px; }
+.interrupteur input { width: 22px; height: 22px; accent-color: var(--ok); }
+.deux { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 16px; }
+.actions { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 8px; }
+
+/* Messages */
+.message { padding: 12px 14px; border-radius: 8px; background: #EAF3EE; color: var(--ok); }
+.message--erreur { background: #FBEAE8; color: var(--alerte); }
+.message[hidden] { display: none; }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 20; max-width: min(92vw, 520px); padding: 12px 18px; border-radius: 10px; background: #1C1612; color: #F1E8D5; box-shadow: 0 8px 24px rgba(0, 0, 0, .25); }
+.toast--erreur { background: var(--alerte); color: #fff; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 20px; background: #EEE7DA; color: var(--doux); font-size: 13px; font-weight: 600; }
+.badge--ok { background: #DCEFE4; color: var(--ok); }
+.badge--alerte { background: #FBE3DF; color: var(--alerte); }
+.dialogue { max-width: min(92vw, 460px); border: 0; border-radius: 12px; padding: 22px; box-shadow: 0 20px 60px rgba(0, 0, 0, .3); }
+.dialogue::backdrop { background: rgba(28, 22, 18, .5); }
+.dialogue__actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+
+/* Accueil */
+.tuiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 8px 0 24px; }
+.tuile { display: flex; flex-direction: column; gap: 4px; padding: 18px; border: 1px solid var(--bord); border-radius: 12px; background: var(--carte); color: var(--texte); text-decoration: none; }
+.tuile b { font: 400 34px Georgia, serif; }
+.tuile--alerte { border-color: var(--accent-clair); box-shadow: inset 4px 0 0 var(--accent-clair); }
+.raccourcis { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* Listes et cartes */
+.entete-vue { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
+.cartes, .lignes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.carte-livre { display: grid; grid-template-columns: 64px 1fr auto; gap: 14px; align-items: center; padding: 12px; border: 1px solid var(--bord); border-radius: 12px; background: var(--carte); }
+.carte-livre img { width: 64px; height: 96px; object-fit: cover; border-radius: 3px; box-shadow: 2px 3px 8px rgba(0, 0, 0, .2); }
+.carte-livre__titre { font: 400 20px Georgia, serif; text-decoration: none; color: var(--texte); }
+.etiquettes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.stock { display: flex; align-items: center; gap: 8px; }
+.stock b { min-width: 2ch; text-align: center; font-size: 20px; }
+.ligne { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 10px 14px; border: 1px solid var(--bord); border-radius: 10px; background: var(--carte); }
+.ligne__num { min-width: 110px; color: var(--doux); font-size: 13px; }
+.ligne__nom { flex: 1 1 200px; width: auto; }
+.ligne__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-left: auto; }
+.ligne--evt input[type="date"] { width: 170px; }
+.ligne--evt input:not([type]) { flex: 1 1 180px; width: auto; }
+.ligne--article > div { flex: 1 1 300px; display: flex; flex-direction: column; gap: 2px; }
+.ligne--article a { overflow-wrap: anywhere; }
+.lignes--passees .ligne { opacity: .7; }
+.ajout { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 16px 0 8px; padding: 16px; border: 1px dashed var(--bord); border-radius: 12px; }
+.ajout label { flex: 1 1 200px; }
+.ajout--colonne { flex-direction: column; align-items: stretch; }
+.ajout--colonne .btn, .ajout--colonne .interrupteur { align-self: flex-start; }
+.ajout--colonne label { flex: none; }
+.filtres { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.filtres a { padding: 6px 14px; border: 1px solid var(--bord); border-radius: 20px; text-decoration: none; color: var(--texte); }
+.filtres a[aria-current] { background: #1C1612; border-color: #1C1612; color: #F1E8D5; }
+
+/* Fiche livre */
+.fiche { display: grid; grid-template-columns: 240px 1fr; gap: 28px; align-items: start; }
+.fiche__couverture { display: flex; flex-direction: column; gap: 10px; position: sticky; top: 80px; }
+.fiche__couverture img { width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 4px; box-shadow: 4px 8px 20px rgba(0, 0, 0, .25); background: #E9E1D2; }
+.fiche__couverture .btn { position: relative; }
+.fiche__champs { display: flex; flex-direction: column; gap: 16px; }
+
+/* Commandes et messages */
+.commande, .message-recu { display: grid; gap: 12px; padding: 16px; border: 1px solid var(--bord); border-radius: 12px; background: var(--carte); }
+.commande { grid-template-columns: 1fr 1fr; }
+.commande__tete { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.commande__livres { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+.dedicace { color: var(--accent); font-style: italic; }
+.commande__actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: end; gap: 12px 20px; }
+.commande__actions label { min-width: 200px; }
+.commande--en_attente, .commande--expire, .commande--annule_client, .commande--echoue { opacity: .65; }
+.message-recu--nouveau { border-color: var(--accent-clair); box-shadow: inset 4px 0 0 var(--accent-clair); }
+.message-recu__texte { white-space: pre-wrap; padding: 12px; border-radius: 8px; background: var(--fond); }
+
+/* Connexion */
+.connexion { display: grid; place-items: center; min-height: 100vh; padding: 20px; background: #1C1612; }
+.connexion__carte { width: min(100%, 440px); display: flex; flex-direction: column; gap: 16px; padding: 32px; border-radius: 14px; background: var(--carte); }
+.connexion__sur { font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--doux); }
+.connexion form { display: flex; flex-direction: column; gap: 14px; }
+
+@media (max-width: 700px) {
+  .fiche { grid-template-columns: 1fr; }
+  .fiche__couverture { position: static; max-width: 220px; }
+  .commande { grid-template-columns: 1fr; }
+  .carte-livre { grid-template-columns: 56px 1fr; }
+  .carte-livre .stock { grid-column: 1 / -1; justify-content: flex-end; }
+  .barre { position: static; padding: 8px 12px; gap: 6px 12px; }
+  .barre__compte { font-size: 12px; gap: 4px 10px; }
+  .onglets { order: 3; flex: 1 1 100%; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -12px; padding: 0 12px; }
+  .onglets a { flex: none; padding: 6px 10px; font-size: 15px; }
+}

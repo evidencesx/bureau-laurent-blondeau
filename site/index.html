@@ -20,7 +20,7 @@
 
     <!-- Le bureau -->
     <section class="vue vue--bureau" aria-label="Le bureau de l’écrivain">
-      <div class="decor" style="--fx:.5;--mfx:.51">
+      <div class="decor" style="--fx:.5;--mfx:.52">
         <img class="decor__fond" src="img/decor-bureau.jpg" width="1680" height="944" alt="">
         <span class="lueur lueur--lanterne" aria-hidden="true"></span>
         <span class="lueur lueur--flamme" aria-hidden="true"></span>
@@ -46,9 +46,9 @@
         </a>
         <a class="plaque plaque--presse" href="#presse" data-panneau="presse" tabindex="-1" aria-hidden="true"><span class="plaque__laiton">Presse</span></a>
 
-        <a class="plaque" href="a-propos.html#contact"><span class="plaque__laiton">Contact</span></a>
+        <a class="plaque" href="contact.html"><span class="plaque__laiton">Contact</span></a>
 
-        <a class="parchemin" href="a-propos.html#contact" tabindex="-1" aria-hidden="true"><span class="parchemin__etiquette">Écrire à l’auteur</span></a>
+        <a class="parchemin" href="contact.html" tabindex="-1" aria-hidden="true"><span class="parchemin__etiquette">Écrire à l’auteur</span></a>
 
         <div class="pile">
           <span class="pile__etiquette" aria-hidden="true"></span>
@@ -89,7 +89,7 @@
     </section>
 
     <!-- La bibliothèque, à gauche : la vue y tourne au clic sur la pile -->
-    <section class="vue vue--biblio" aria-label="La bibliothèque" inert>
+    <section class="vue vue--biblio" data-rang="1" aria-label="La bibliothèque" inert>
       <div class="decor" style="--fx:.5;--mfx:.5">
         <img class="decor__fond" src="img/decor-bibliotheque.jpg" width="1680" height="944" alt="" loading="lazy">
         <span class="lueur lueur--b1" aria-hidden="true"></span>
@@ -249,10 +249,12 @@
       <a href="#evenements" data-panneau="evenements">Évènements</a>
       <a href="#presse" data-panneau="presse">Presse</a>
       <a href="a-propos.html">À propos</a>
-      <a href="a-propos.html#contact">Contact</a>
+      <a href="contact.html">Contact</a>
+      <a href="panier.html" class="menu__panier">Panier<span class="menu__compte" hidden></span></a>
     </nav>
   </header>
   <canvas class="particules" aria-hidden="true"></canvas>
+  <p class="glisser" aria-hidden="true"><span>←</span>Glissez pour explorer<span>→</span></p>
 </div>
 
 <dialog class="lecteur" id="lecteur">
@@ -266,8 +268,8 @@
           <div class="ob-corps"></div>
           <div class="ob-achat">
             <p class="ob-prix"></p>
-            <button type="button" disabled>Ajouter au panier</button>
-            <p class="ob-note">La boutique ouvre bientôt. Livraison à domicile&nbsp;: 5&nbsp;€.</p>
+            <button type="button" class="ob-ajouter" disabled>Ajouter au panier</button>
+            <p class="ob-note">Envoyé par l’auteur, dédicace possible. Livraison en France métropolitaine&nbsp;: 5&nbsp;€ par commande.</p>
           </div>
         </div>
         <div class="ob-couv">
@@ -308,7 +310,7 @@
           <h3>Déjà venu à</h3>
           <ol></ol>
         </div>
-        <p class="liege__note">Une dédicace personnalisée&nbsp;? <a href="a-propos.html#contact">Écrivez à l’auteur</a>.</p>
+        <p class="liege__note">Une dédicace personnalisée&nbsp;? <a href="contact.html">Écrivez à l’auteur</a>.</p>
       </div>
     </div>
   </div>
@@ -351,8 +353,11 @@
   </div>
 </dialog>
 
-<script src="js/scene.js"></script>
-<script src="js/lecteur.js"></script>
-<script src="js/panneaux.js"></script>
+<!-- demarrage.js construit la page depuis la base (livres, salons, presse), puis charge la scène.
+     Navigateur sans modules : on lance directement la scène sur le contenu ci-dessus. -->
+<script type="module" src="js/demarrage.js"></script>
+<script nomodule src="js/scene.js"></script>
+<script nomodule src="js/lecteur.js"></script>
+<script nomodule src="js/panneaux.js"></script>
 </body>
 </html>

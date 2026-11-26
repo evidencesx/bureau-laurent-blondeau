@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conditions générales de vente · Laurent Blondeau</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23140E0A'/%3E%3Cpath d='M16 6c3 4 4 7 4 9a4 4 0 0 1-8 0c0-2 1-5 4-9z' fill='%23F2A54A'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="brume" aria-hidden="true"></canvas>
+
+<header class="entete">
+  <div class="entete__titre">
+    <p class="entete__nom"><a href="index.html">Laurent Blondeau</a></p>
+    <p class="entete__phrase">Tant qu’il y aura des lecteurs, il y aura des écrivains.</p>
+  </div>
+  <nav class="menu" aria-label="Menu principal">
+    <a href="index.html">Le bureau</a>
+    <a href="index.html#evenements">Évènements</a>
+    <a href="index.html#presse">Presse</a>
+    <a href="a-propos.html">À propos</a>
+    <a href="contact.html">Contact</a>
+    <a href="panier.html" class="menu__panier">Panier<span class="menu__compte" hidden></span></a>
+  </nav>
+</header>
+
+<!-- BROUILLON : les passages « À compléter » doivent être renseignés (statut, SIRET, délais, médiateur)
+     et l'ensemble relu avant d'encaisser de vrais paiements. -->
+<main class="apropos legal">
+  <h1>Conditions générales de vente</h1>
+  <p class="legal__maj">Version du 26 novembre 2026.</p>
+
+  <section>
+    <h2>1. Le vendeur</h2>
+    <p>Les livres présentés sur ce site sont vendus par Laurent Blondeau, auteur, 28320 Gallardon, <a href="mailto:evidencesx@gmail.com">evidencesx@gmail.com</a>.</p>
+    <p class="a-completer">À compléter : statut (micro-entrepreneur…), numéro SIRET, adresse postale complète.</p>
+  </section>
+
+  <section>
+    <h2>2. Les livres et les prix</h2>
+    <p>Les livres sont neufs, envoyés par l’auteur. Les prix sont indiqués en euros, toutes taxes comprises, et respectent le prix unique du livre fixé par l’éditeur (loi du 10 août 1981). Les frais de livraison s’ajoutent au prix des livres et sont indiqués avant le paiement.</p>
+    <p>Une dédicace peut être demandée gratuitement lors de la commande.</p>
+  </section>
+
+  <section>
+    <h2>3. La commande et le paiement</h2>
+    <p>La commande est passée depuis la page Panier. Elle est ferme dès que le paiement est accepté. Le paiement se fait en ligne par l’intermédiaire de Stripe&nbsp;; les coordonnées bancaires ne transitent jamais par ce site. Un récapitulatif est envoyé par e-mail dès la confirmation du paiement.</p>
+    <p>Les exemplaires sont réservés pendant une heure le temps du paiement, puis remis en vente si le paiement n’aboutit pas.</p>
+  </section>
+
+  <section>
+    <h2>4. La livraison</h2>
+    <p>La livraison se fait en France métropolitaine (Corse comprise) uniquement, pour un forfait de 5&nbsp;€ par commande, quel que soit le nombre de livres.</p>
+    <p class="a-completer">À compléter : délai d’expédition (par exemple « sous 3 à 5 jours ouvrés ») et mode d’envoi.</p>
+  </section>
+
+  <section>
+    <h2>5. Le droit de rétractation</h2>
+    <p>Vous disposez de 14 jours à compter de la réception de votre commande pour vous rétracter, sans avoir à vous justifier, en écrivant à <a href="mailto:evidencesx@gmail.com">evidencesx@gmail.com</a>. Les livres sont à renvoyer dans les 14 jours suivant votre demande, en parfait état, les frais de retour restant à votre charge. Le remboursement, frais de livraison initiaux compris, intervient au plus tard 14 jours après la réception de votre demande, par le même moyen de paiement.</p>
+    <p>Un livre dédicacé à votre demande est un bien personnalisé&nbsp;: il ne peut pas faire l’objet d’une rétractation (article L221-28, 3° du Code de la consommation).</p>
+  </section>
+
+  <section>
+    <h2>6. Les garanties</h2>
+    <p>Les livres bénéficient de la garantie légale de conformité (articles L217-3 et suivants du Code de la consommation) et de la garantie contre les vices cachés (articles 1641 et suivants du Code civil). Un livre arrivé abîmé est remplacé ou remboursé&nbsp;: écrivez simplement à l’auteur avec une photo.</p>
+  </section>
+
+  <section>
+    <h2>7. Les litiges</h2>
+    <p>En cas de difficulté, contactez d’abord l’auteur&nbsp;: une solution amiable sera recherchée. À défaut, vous pouvez recourir gratuitement à un médiateur de la consommation.</p>
+    <p class="a-completer">À compléter : nom et coordonnées du médiateur de la consommation choisi par Laurent (obligatoire pour vendre aux particuliers).</p>
+    <p>Les présentes conditions sont soumises au droit français.</p>
+  </section>
+
+  <section>
+    <h2>8. Vos données</h2>
+    <p>Les informations de commande servent uniquement à la préparer, l’envoyer et en garder la trace comptable. Voir les <a href="mentions-legales.html">mentions légales</a>.</p>
+  </section>
+</main>
+
+<footer class="pied">
+  <p class="pied__note">© 2026 Laurent Blondeau · <a href="mentions-legales.html">Mentions légales</a></p>
+</footer>
+
+<script src="js/scene.js"></script>
+<script src="js/achat.js"></script>
+</body>
+</html>

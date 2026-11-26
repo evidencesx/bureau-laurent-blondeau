@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Merci · Laurent Blondeau</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23140E0A'/%3E%3Cpath d='M16 6c3 4 4 7 4 9a4 4 0 0 1-8 0c0-2 1-5 4-9z' fill='%23F2A54A'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="brume" aria-hidden="true"></canvas>
+
+<header class="entete">
+  <div class="entete__titre">
+    <p class="entete__nom"><a href="index.html">Laurent Blondeau</a></p>
+    <p class="entete__phrase">Tant qu’il y aura des lecteurs, il y aura des écrivains.</p>
+  </div>
+  <nav class="menu" aria-label="Menu principal">
+    <a href="index.html">Le bureau</a>
+    <a href="index.html#evenements">Évènements</a>
+    <a href="index.html#presse">Presse</a>
+    <a href="a-propos.html">À propos</a>
+    <a href="contact.html">Contact</a>
+    <a href="panier.html" class="menu__panier">Panier<span class="menu__compte" hidden></span></a>
+  </nav>
+</header>
+
+<main class="apropos boutique">
+  <section class="confirmation" id="confirmation" aria-live="polite">
+    <h1>Merci&nbsp;!</h1>
+    <p id="confirmation-texte">Nous vérifions votre paiement…</p>
+    <p><a class="bouton bouton--clair" href="index.html">Revenir au bureau</a></p>
+  </section>
+</main>
+
+<footer class="pied">
+  <p class="pied__note">© 2026 Laurent Blondeau · <a href="cgv.html">Conditions de vente</a> · <a href="mentions-legales.html">Mentions légales</a></p>
+</footer>
+
+<script src="js/scene.js"></script>
+<script src="js/achat.js"></script>
+<script type="module">
+  // Le retour de Stripe ne prouve rien : on demande à la base si le webhook a confirmé le paiement.
+  import { baseConfiguree, base, euros } from './js/client.js';
+  const p = new URLSearchParams(location.search);
+  const texte = document.getElementById('confirmation-texte');
+  async function verifier(essai = 0) {
+    if (!baseConfiguree || !p.get('commande')) { texte.textContent = 'Aucune commande à vérifier.'; return; }
+    const sb = await base();
+    const { data } = await sb.rpc('statut_commande', { p_numero: p.get('commande'), p_jeton: p.get('jeton') });
+    if (data && data.paiement_statut === 'paye') {
+      window.Panier.vider();
+      texte.textContent = `Votre commande n° ${data.numero} (${euros(data.total_cents)}) est bien réglée. Un récapitulatif vient de partir vers votre boîte e-mail, et je prépare votre colis.`;
+    } else if (essai < 10) {
+      setTimeout(() => verifier(essai + 1), 2000);
+    } else {
+      texte.textContent = 'Le paiement est en cours de validation chez Stripe. Vous recevrez un e-mail dès qu’il sera confirmé. Si rien n’arrive d’ici une heure, écrivez-moi depuis la page Contact.';
+    }
+  }
+  verifier();
+</script>
+</body>
+</html>

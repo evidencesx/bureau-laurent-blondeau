@@ -117,6 +117,8 @@
 
     ouvert = { id: id, source: source, ratio: ratio, simple: m.simple, depuisHistorique: !!sansHistorique };
     if (!sansHistorique) history.pushState({ livre: id }, '', '#' + id);
+    lecteur.dataset.livre = id;
+    document.dispatchEvent(new CustomEvent('livre:ouvert', { detail: { id: id } })); // achat.js règle le bouton du panier
 
     animer(voile, [{ opacity: 0 }, { opacity: 1 }], 550, 'ease');
     animer(fermer, [{ opacity: 0 }, { opacity: 1 }], 400, 'ease');

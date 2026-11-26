@@ -37,7 +37,8 @@
       var mois = { janvier: 'janv.', février: 'févr.', juillet: 'juil.', septembre: 'sept.', octobre: 'oct.', novembre: 'nov.', décembre: 'déc.' };
       quand.textContent = li.querySelector('time').textContent.replace(/ \d{4}$/, '').replace(/[a-zéû]+$/, function (m) { return mois[m] || m; });
       fiche.appendChild(quand);
-      fiche.appendChild(document.createTextNode(li.lastChild.textContent.trim().replace(/ \(\d+\)$/, '')));
+      var lieu = li.querySelector('.lieu'); // contenu venu de la base : le lieu a sa propre balise
+      fiche.appendChild(document.createTextNode((lieu ? lieu.textContent : li.lastChild.textContent).trim().replace(/ \(\d+\)$/, '')));
       mini.appendChild(fiche);
     });
   }
@@ -63,7 +64,7 @@
     var r = el.getBoundingClientRect();
     var visible = r.width > 0 && r.right > 0 && r.left < window.innerWidth && r.bottom > 0 && r.top < window.innerHeight;
     var camera = document.querySelector('.camera');
-    if (camera && camera.classList.contains('vue-biblio')) visible = false;
+    if (camera && camera.dataset.vue && camera.dataset.vue !== '0') visible = false;
     return visible ? el : null;
   }
 

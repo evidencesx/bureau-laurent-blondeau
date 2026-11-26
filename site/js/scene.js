@@ -38,28 +38,61 @@
   var camera = document.querySelector('.camera');
   if (!camera) return;
 
-  /* ---------- La caméra : deux murs côte à côte, on tourne la tête de l'un à l'autre ----------
-     Le mouvement lui-même est en CSS (.vue-biblio, .tourne) ; ici on ne fait que poser les classes. */
+  /* ---------- La caméra : les murs côte à côte, on tourne la tête de l'un à l'autre ----------
+     Mur 0 : le bureau. Murs 1, 2… : les bibliothèques, de plus en plus à gauche (4 styles chacune).
+     Tourner, c'est décaler la pièce de n écrans vers la droite ; un rideau par jointure passe au
+     premier plan. Le flou et le mouvement de tête sont en CSS (.tourne). */
   var vueBureau = camera.querySelector('.vue--bureau');
-  var vueBiblio = camera.querySelector('.vue--biblio');
-  var vueActive = 'bureau';
+  var biblios = Array.prototype.slice.call(camera.querySelectorAll('.vue--biblio'))
+    .sort(function (a, b) { return (+a.dataset.rang || 1) - (+b.dataset.rang || 1); });
+  var vues = [vueBureau].concat(biblios);
+  var piece = camera.querySelector('.piece');
+  var actif = 0;
   var minuteur = 0;
+  var DUREE = parseFloat(getComputedStyle(camera).getPropertyValue('--duree')) || 2.3;
 
+  // Un rideau par jointure : entre le bureau et la 1re bibliothèque, entre la 1re et la 2e…
+  var rideaux = Array.prototype.slice.call(piece.querySelectorAll('.rideau'));
+  while (rideaux.length < biblios.length) {
+    var r = document.createElement('span');
+    r.className = 'rideau'; r.setAttribute('aria-hidden', 'true');
+    piece.appendChild(r); rideaux.push(r);
+  }
+  rideaux.forEach(function (r, i) { r.style.setProperty('--jointure', i); });
+  // Course d'un rideau : décalage 0,35 × (position de la pièce − passage de sa jointure au centre).
+  function courseRideau(i, position) { return 'translateX(' + (35 * (position - i - 0.5)).toFixed(2) + 'cqw)'; }
+
+  function poser(n) {
+    vues.forEach(function (v, i) { v.inert = i !== n; v.classList.toggle('vue--active', i === n); });
+    camera.classList.toggle('vue-biblio', n > 0); // repère pour les autres scripts
+    camera.dataset.vue = n;
+  }
+  function decaler(n) { piece.style.transform = n ? 'translateX(' + (n * 100) + '%)' : ''; }
+
+  function rangDuLivre(livre) {
+    var b = livre && camera.querySelector('.vue--biblio .book[data-livre="' + livre + '"]');
+    var v = b && b.closest('.vue--biblio');
+    return v ? (+v.dataset.rang || 1) : 1;
+  }
+
+  // vue : 'bureau', 'biblio' (la bibliothèque du livre demandé, ou la 1re) ou un numéro de mur.
   function aller(vue, livre, instantane) {
-    if (vue === vueActive) return;
-    vueActive = vue;
-    vueBureau.inert = vue !== 'bureau';
-    vueBiblio.inert = vue !== 'biblio';
+    var n = vue === 'bureau' ? 0 : vue === 'biblio' ? rangDuLivre(livre) : +vue;
+    if (!(n >= 0 && n < vues.length) || n === actif) return;
+    var depuis = actif;
+    actif = n;
     clearTimeout(minuteur);
+    var cible = vues[n];
     var arrivee = function () {
       camera.classList.remove('tourne');
-      if (vue === 'biblio') {
-        var cible = livre && vueBiblio.querySelector('.book[data-livre="' + livre + '"]');
-        if (cible) {
-          cible.focus({ preventScroll: true });
-          cible.classList.remove('appel'); void cible.offsetWidth; cible.classList.add('appel');
+      poser(n);
+      if (n > 0) {
+        var b = livre && cible.querySelector('.book[data-livre="' + livre + '"]');
+        if (b) {
+          b.focus({ preventScroll: true });
+          b.classList.remove('appel'); void b.offsetWidth; b.classList.add('appel');
         } else {
-          vueBiblio.querySelector('.retour').focus({ preventScroll: true });
+          (cible.querySelector('.rayons-suite') || cible.querySelector('.retour')).focus({ preventScroll: true });
         }
       } else {
         var tome = livre && vueBureau.querySelector('.tome[data-livre="' + livre + '"]');
@@ -68,21 +101,33 @@
     };
     if (instantane || moinsDeMouvement) {
       camera.classList.add('sans-transition');
-      camera.classList.toggle('vue-biblio', vue === 'biblio');
+      decaler(n);
       void camera.offsetWidth;
       camera.classList.remove('sans-transition');
       arrivee();
       return;
     }
+    // Plus le regard va loin, plus il prend son temps (sans traîner : +50 % par mur supplémentaire).
+    var duree = DUREE * (1 + 0.5 * (Math.abs(n - depuis) - 1));
+    camera.style.setProperty('--duree', duree + 's');
+    rideaux.forEach(function (r, i) {
+      r.style.transition = 'none';
+      r.style.transform = courseRideau(i, depuis);
+      void r.offsetWidth;
+      r.style.transition = '';
+      r.style.transform = courseRideau(i, n);
+    });
     camera.classList.remove('tourne');
     void camera.offsetWidth; // relance l'animation du regard même si on fait demi-tour en route
     camera.classList.add('tourne');
-    camera.classList.toggle('vue-biblio', vue === 'biblio');
-    minuteur = setTimeout(arrivee, parseFloat(getComputedStyle(camera).getPropertyValue('--duree')) * 1000 + 50);
+    vues.forEach(function (v) { v.inert = true; });
+    decaler(n);
+    minuteur = setTimeout(arrivee, duree * 1000 + 50);
   }
   window.allerVers = aller;
+  poser(0);
 
-  /* La pile : au survol, le livre sort un peu et son titre s'affiche ; au clic, on tourne vers la bibliothèque. */
+  /* La pile : au survol, le livre sort un peu et son titre s'affiche ; au clic, on tourne vers sa bibliothèque. */
   var etiquette = camera.querySelector('.pile__etiquette');
   camera.querySelectorAll('.tome').forEach(function (tome) {
     var titre = tome.querySelector('.visuellement-cache').textContent;
@@ -94,16 +139,34 @@
     tome.addEventListener('blur', cacher);
     tome.addEventListener('click', function () { cacher(); aller('biblio', tome.dataset.livre); });
   });
-  camera.querySelector('.retour').addEventListener('click', function () { aller('bureau'); });
+  camera.querySelectorAll('.retour').forEach(function (b) { b.addEventListener('click', function () { aller('bureau'); }); });
+  camera.querySelectorAll('[data-aller]').forEach(function (b) { b.addEventListener('click', function () { aller(b.dataset.aller); }); });
   document.addEventListener('keydown', function (e) {
     var lecteur = document.getElementById('lecteur');
-    if (e.key === 'Escape' && vueActive === 'biblio' && !(lecteur && lecteur.open)) aller('bureau');
+    if (e.key === 'Escape' && actif > 0 && !(lecteur && lecteur.open)) aller('bureau');
   });
 
-  /* Adresse directe vers un livre (#l-autre) : on arrive déjà devant la bibliothèque. */
+  /* ---------- Téléphone : le décor glisse au doigt ----------
+     Chaque mur est une zone qui défile à l'horizontale ; au départ, on la centre sur --mfx
+     (la pile sur le bureau, les étagères dans la bibliothèque). */
+  var etroit = window.matchMedia('(max-width: 760px)');
+  function centrerMobile() {
+    if (!etroit.matches) return;
+    vues.forEach(function (vue) {
+      var decor = vue.querySelector('.decor');
+      var fx = parseFloat(decor.style.getPropertyValue('--mfx')) || 0.5;
+      vue.scrollLeft = decor.offsetWidth * fx - vue.clientWidth / 2;
+    });
+  }
+  centrerMobile();
+  window.addEventListener('load', centrerMobile);
+  etroit.addEventListener('change', centrerMobile);
+  window.addEventListener('orientationchange', function () { setTimeout(centrerMobile, 300); });
+
+  /* Adresse directe vers un livre (#l-autre) : on arrive déjà devant sa bibliothèque. */
   var demande = location.hash.slice(1);
   var fiche = demande && document.getElementById(demande);
-  if (fiche && fiche.classList.contains('fiche')) aller('biblio', null, true);
+  if (fiche && fiche.classList.contains('fiche')) aller('biblio', demande, true);
 
   /* ---------- Léger relief au mouvement de la souris ---------- */
   if (!moinsDeMouvement) {
@@ -136,10 +199,10 @@
   function dessiner(ms) {
     pc.clearRect(0, 0, W, Hc);
     if (camera.classList.contains('tourne')) return;
-    var decor = (vueActive === 'bureau' ? vueBureau : vueBiblio).querySelector('.decor').getBoundingClientRect();
+    var decor = vues[actif].querySelector('.decor').getBoundingClientRect();
     var cr = camera.getBoundingClientRect();
     var k = decor.width / 1680;
-    var sources = SOURCES[vueActive].map(function (s) { return [decor.left - cr.left + s[0] * k, decor.top - cr.top + s[1] * k, s[2]]; });
+    var sources = SOURCES[actif ? 'biblio' : 'bureau'].map(function (s) { return [decor.left - cr.left + s[0] * k, decor.top - cr.top + s[1] * k, s[2]]; });
     var t = ms / 1000, portee = 300 * k;
     grains.forEach(function (q) {
       var x = ((q.x * W + Math.sin(t * q.v + q.p) * 25) % W + W) % W;
