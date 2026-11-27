@@ -10,8 +10,8 @@
 // Tant que ces deux valeurs sont vides, le site affiche le contenu écrit dans
 // index.html, sans base de données.
 
-export const SUPABASE_URL = '';
-export const SUPABASE_ANON_KEY = '';
+export const SUPABASE_URL = 'https://outdeoijoafekospeagg.supabase.co';
+export const SUPABASE_ANON_KEY = 'sb_publishable_B7SPUASE-fRI5XEazZ9-eA_H0RVXJuW';
 
 // Espace de stockage des couvertures (voir installation.sql).
 export const BUCKET_COUVERTURES = 'couvertures';

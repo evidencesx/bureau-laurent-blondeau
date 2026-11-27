@@ -363,6 +363,32 @@ create policy "admin_modif_couvertures" on storage.objects for update using (buc
 create policy "admin_suppr_couvertures" on storage.objects for delete using (bucket_id = 'couvertures' and est_admin());
 
 -- =============================================================================
+-- 6. DROITS DES RÔLES (les projets Supabase récents ne les donnent plus d'office ;
+--    les règles d'accès ci-dessus filtrent toujours chaque ligne)
+-- =============================================================================
+grant usage on schema public to anon, authenticated, service_role;
+
+-- Le visiteur lit le catalogue, les salons et la presse.
+grant select on styles, livres, evenements, presse to anon, authenticated;
+
+-- Laurent connecté gère tout (les règles vérifient qu'il est bien administrateur).
+grant insert, update, delete on styles, livres, evenements, presse to authenticated;
+grant select, insert, update, delete on commandes, lignes_commande, messages_contact to authenticated;
+
+-- Les fonctions serveur (paiement, webhook, e-mails, contact) travaillent avec la clé de service.
+grant all on all tables in schema public to service_role;
+grant usage, select on all sequences in schema public to service_role;
+
+-- Les fonctions de la base.
+grant execute on function est_admin() to anon, authenticated, service_role;
+grant execute on function creer_commande(jsonb, jsonb) to anon, authenticated, service_role;
+grant execute on function statut_commande(text, text) to anon, authenticated, service_role;
+grant execute on function annuler_paiement_client(text, text) to anon, authenticated, service_role;
+grant execute on function liberer_commande(uuid, text) to service_role;
+grant execute on function marquer_commande_payee(text, uuid) to service_role;
+grant execute on function purger_commandes_abandonnees() to service_role;
+
+-- =============================================================================
 -- Vérification : chaque ligne doit afficher « true ».
 -- =============================================================================
 select
