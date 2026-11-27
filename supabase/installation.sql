@@ -91,7 +91,8 @@ create table commandes (
   paye_le timestamptz,
   jeton_client text not null default replace(gen_random_uuid()::text || gen_random_uuid()::text, '-', ''),
   confirmation_envoyee_at timestamptz,
-  archivee_le timestamptz,                 -- supprimée 3 mois après (supprimer_commandes_archivees)
+  archivee_le timestamptz,                 -- données effacées 3 mois après (anonymiser_commandes)
+  anonymisee_le timestamptz,
   notes text,
   created_at timestamptz not null default now()
 );
@@ -353,9 +354,10 @@ exception when others then
   raise notice 'pg_cron indisponible : seul Stripe libérera le stock. (%)', sqlerrm;
 end $$;
 
--- Commandes archivées : supprimées 3 mois après leur archivage.
--- La date se remplit toute seule : posée à l'archivage, effacée si la
---    commande sort des archives (le compte à rebours repart de zéro).
+-- Commandes : effacement des données personnelles 3 mois après archivage
+-- (ou après un panier jamais payé), suppression après 10 ans.
+-- La date d'archivage se remplit toute seule : posée à l'archivage, effacée
+--    si la commande sort des archives (le compte à rebours repart de zéro).
 create or replace function dater_archivage()
 returns trigger
 language plpgsql
@@ -378,31 +380,46 @@ create trigger trg_dater_archivage
   before insert or update of statut on commandes
   for each row execute function dater_archivage();
 
--- La suppression, 3 mois après l'archivage.
-create or replace function supprimer_commandes_archivees()
+-- L'effacement des données personnelles, puis la suppression après 10 ans.
+
+create or replace function anonymiser_commandes()
 returns integer
 language plpgsql
 security definer
 set search_path = public
 as $fn$
-declare v_total integer;
+declare v_ids uuid[];
 begin
-  delete from commandes
-   where statut = 'archivee'
-     and archivee_le < now() - interval '3 months';
-  get diagnostics v_total = row_count;
-  return v_total;
+  select array_agg(id) into v_ids
+    from commandes
+   where anonymisee_le is null
+     and (
+       (statut = 'archivee' and archivee_le < now() - interval '3 months')
+       or (paiement_statut <> 'paye' and created_at < now() - interval '3 months')
+     );
+
+  if v_ids is not null then
+    update lignes_commande set dedicace = null where commande_id = any(v_ids);
+    update commandes
+       set client_nom = 'Données effacées', client_email = '', client_telephone = null,
+           adresse_ligne1 = '', adresse_ligne2 = null, code_postal = '', ville = '',
+           anonymisee_le = now()
+     where id = any(v_ids);
+  end if;
+
+  delete from commandes where created_at < now() - interval '10 years';
+  return coalesce(array_length(v_ids, 1), 0);
 end;
 $fn$;
-revoke execute on function supprimer_commandes_archivees() from public, anon, authenticated;
-grant execute on function supprimer_commandes_archivees() to service_role;
+revoke execute on function anonymiser_commandes() from public, anon, authenticated;
+grant execute on function anonymiser_commandes() to service_role;
 
 -- Tous les jours à 3 h 23.
 do $$
 begin
-  perform cron.schedule('supprimer-commandes-archivees', '23 3 * * *', 'select supprimer_commandes_archivees();');
+  perform cron.schedule('anonymiser-commandes', '23 3 * * *', 'select anonymiser_commandes();');
 exception when others then
-  raise notice 'pg_cron indisponible : les commandes archivées ne seront pas supprimées automatiquement. (%)', sqlerrm;
+  raise notice 'pg_cron indisponible : les données ne seront pas effacées automatiquement. (%)', sqlerrm;
 end $$;
 
 -- =============================================================================

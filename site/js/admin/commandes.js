@@ -9,8 +9,9 @@
 //
 // Les dossiers d'étape ne montrent que des commandes réglées : c'est le vrai
 // travail. Les paniers jamais payés ont leur propre dossier, pour ne pas noyer
-// le reste. Une commande archivée est supprimée par la base au bout de 3 mois
-// (supprimer_commandes_archivees, tous les jours). Les remboursements se font
+// le reste. 3 mois après l’archivage (ou après un panier jamais payé), la base
+// efface les données personnelles (anonymiser_commandes, tous les jours) et garde
+// numéro, date, livres et montants pour la comptabilité. Les remboursements se font
 // dans le tableau de bord Stripe, à la main.
 
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../config.js';
@@ -43,13 +44,13 @@ const DOSSIERS_VALIDES = DOSSIERS.map(([d]) => d);
 // Les filtres survivent au changement d'écran (on revient sur les commandes avec les mêmes réglages).
 const filtres = { du: '', au: '', livre: '', paiement: '', texte: '' };
 
-const MOIS_AVANT_SUPPRESSION = 3;
+const MOIS_AVANT_EFFACEMENT = 3;
 const estPayee = (c) => c.paiement_statut === 'paye';
 const dossierDe = (c) => (estPayee(c) || c.statut === 'archivee' ? c.statut : 'non-payees');
 const jourLocal = (iso) => new Date(iso).toLocaleDateString('sv-SE'); // AAAA-MM-JJ, comme les champs date
-function dateSuppression(c) {
+function dateEffacement(c) {
   const d = new Date(c.archivee_le || Date.now());
-  d.setMonth(d.getMonth() + MOIS_AVANT_SUPPRESSION);
+  d.setMonth(d.getMonth() + MOIS_AVANT_EFFACEMENT);
   return dateFr(d.toISOString());
 }
 
@@ -71,7 +72,7 @@ function correspondAuxFiltres(c) {
 export async function vueCommandes(ctx, param) {
   const { sb, vue } = ctx;
   const { data, error } = await sb.from('commandes')
-    .select('id, numero, created_at, paye_le, archivee_le, client_nom, client_email, client_telephone, adresse_ligne1, adresse_ligne2, code_postal, ville, sous_total_cents, livraison_cents, total_cents, statut, paiement_statut, confirmation_envoyee_at, notes, lignes_commande(titre_livre, prix_unitaire_cents, quantite, dedicace, livre_id)')
+    .select('id, numero, created_at, paye_le, archivee_le, anonymisee_le, client_nom, client_email, client_telephone, adresse_ligne1, adresse_ligne2, code_postal, ville, sous_total_cents, livraison_cents, total_cents, statut, paiement_statut, confirmation_envoyee_at, notes, lignes_commande(titre_livre, prix_unitaire_cents, quantite, dedicace, livre_id)')
     .order('created_at', { ascending: false }).limit(1000);
   if (error) throw error;
   const commandes = data;
@@ -117,7 +118,7 @@ export async function vueCommandes(ctx, param) {
     bilan.textContent = visibles.length
       ? `${visibles.length} commande${visibles.length > 1 ? 's' : ''}${encaisse ? ` · ${euros(encaisse)} encaissés` : ''}`
       : '';
-    if (dossier === 'archivee' && visibles.length) bilan.textContent += ` · chaque commande archivée est supprimée ${MOIS_AVANT_SUPPRESSION} mois après son archivage`;
+    if (dossier === 'archivee' && visibles.length) bilan.textContent += ` · ${MOIS_AVANT_EFFACEMENT} mois après l’archivage, nom, adresse, e-mail et dédicaces sont effacés ; numéro, date, livres et montants restent pour la comptabilité`;
 
     ul.replaceChildren(...visibles.map((c) => carte(c)));
     if (!visibles.length) {
@@ -134,7 +135,7 @@ export async function vueCommandes(ctx, param) {
       if (!ok) return false;
     }
     if (nouveau === 'archivee') {
-      const ok = await confirmer(`Archiver la commande ${c.numero} ? Elle sera supprimée définitivement dans ${MOIS_AVANT_SUPPRESSION} mois. D’ici là, vous pouvez la sortir des archives en changeant son statut.`, { oui: 'Archiver' });
+      const ok = await confirmer(`Archiver la commande ${c.numero} ? Dans ${MOIS_AVANT_EFFACEMENT} mois, le nom, l’adresse, l’e-mail et les dédicaces seront effacés (le numéro, la date, les livres et les montants restent pour la comptabilité). D’ici là, vous pouvez la sortir des archives en changeant son statut.`, { oui: 'Archiver' });
       if (!ok) return false;
     }
     if (ancien === 'annulee') {
@@ -147,7 +148,7 @@ export async function vueCommandes(ctx, param) {
         if (livre) await sb.from('livres').update({ stock: livre.stock + l.quantite }).eq('id', l.livre_id);
       }
     }
-    const { data: maj, error: e1 } = await sb.from('commandes').update({ statut: nouveau }).eq('id', c.id).select('statut, archivee_le').single();
+    const { data: maj, error: e1 } = await sb.from('commandes').update({ statut: nouveau }).eq('id', c.id).select('statut, archivee_le, anonymisee_le').single();
     if (e1) { toast(erreurLisible(e1), 'erreur'); return false; }
     Object.assign(c, maj);
     toast(`Commande ${c.numero} : ${STATUTS[c.statut].toLowerCase()}.`);
@@ -161,10 +162,11 @@ export async function vueCommandes(ctx, param) {
     li.className = `commande commande--${c.paiement_statut}`;
     const lignes = c.lignes_commande || [];
     const payee = estPayee(c);
+    const effacee = Boolean(c.anonymisee_le);
     const suite = payee ? SUITE[c.statut] : null;
     li.innerHTML = `
       <div class="commande__tete">
-        <div><b>${echapper(c.numero)}</b> · ${dateHeure(c.created_at)}<br><span class="petit">${echapper(c.client_nom)} · ${euros(c.total_cents)}</span></div>
+        <div><b>${echapper(c.numero)}</b> · ${dateHeure(c.created_at)}<br><span class="petit">${effacee ? 'Client effacé' : echapper(c.client_nom)} · ${euros(c.total_cents)}</span></div>
         <div class="commande__badges">
           ${payee ? `<span class="badge badge--etape" data-statut="${c.statut}">${STATUTS[c.statut] || c.statut}</span>` : ''}
           <span class="badge ${payee ? 'badge--ok' : 'badge--alerte'}">${PAIEMENTS[c.paiement_statut] || c.paiement_statut}</span>
@@ -175,19 +177,20 @@ export async function vueCommandes(ctx, param) {
           ${l.dedicace ? `<br><span class="dedicace">Dédicace : « ${echapper(l.dedicace)} »</span>` : ''}</li>`).join('')}
         <li class="petit">Livraison ${euros(c.livraison_cents)}</li>
       </ul>
-      <div class="commande__adresse">
+      ${effacee ? '' : `<div class="commande__adresse">
         <p class="petit">Envoyer à</p>
         <p>${[c.client_nom, c.adresse_ligne1, c.adresse_ligne2, `${c.code_postal} ${c.ville}`].filter(Boolean).map(echapper).join('<br>')}</p>
         <p class="petit"><a href="mailto:${echapper(c.client_email)}">${echapper(c.client_email)}</a>${c.client_telephone ? ` · ${echapper(c.client_telephone)}` : ''}</p>
         ${c.notes ? `<p class="message message--erreur">${echapper(c.notes)}</p>` : ''}
-      </div>
-      ${c.statut === 'archivee' ? `<p class="petit commande__plein">Archivée le ${dateFr(c.archivee_le || new Date().toISOString())} · supprimée le ${dateSuppression(c)}</p>` : ''}
+      </div>`}
+      ${c.anonymisee_le ? `<p class="petit commande__plein">Données personnelles effacées le ${dateFr(c.anonymisee_le)}</p>`
+        : c.statut === 'archivee' ? `<p class="petit commande__plein">Archivée le ${dateFr(c.archivee_le || new Date().toISOString())} · données personnelles effacées le ${dateEffacement(c)}</p>` : ''}
       <div class="commande__actions">
         ${payee ? `<label>Statut
           <select>${Object.entries(STATUTS).map(([v, t]) => `<option value="${v}"${v === c.statut ? ' selected' : ''}>${t}</option>`).join('')}</select>
         </label>` : '<p class="petit">Pas de suivi tant que le paiement n’est pas arrivé.</p>'}
         ${suite ? `<button class="btn" data-a="suite">Passer à « ${STATUTS[suite]} »</button>` : ''}
-        ${payee ? `<button class="lien" data-a="confirmation">${c.confirmation_envoyee_at ? 'Renvoyer le récapitulatif au client' : '⚠ Récapitulatif non envoyé : l’envoyer'}</button>` : ''}
+        ${payee && !effacee ? `<button class="lien" data-a="confirmation">${c.confirmation_envoyee_at ? 'Renvoyer le récapitulatif au client' : '⚠ Récapitulatif non envoyé : l’envoyer'}</button>` : ''}
       </div>`;
 
     const choix = li.querySelector('select');
