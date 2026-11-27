@@ -94,6 +94,18 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent-clai
 .filtres { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .filtres a { padding: 6px 14px; border: 1px solid var(--bord); border-radius: 20px; text-decoration: none; color: var(--texte); }
 .filtres a[aria-current] { background: #1C1612; border-color: #1C1612; color: #F1E8D5; }
+.filtres button { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border: 1px solid var(--bord); border-radius: 20px; background: transparent; color: var(--texte); font: inherit; cursor: pointer; }
+.filtres button[aria-current] { background: #1C1612; border-color: #1C1612; color: #F1E8D5; }
+.compteur { min-width: 22px; padding: 0 6px; border-radius: 11px; background: #EEE7DA; color: var(--doux); font-size: 12px; font-weight: 700; text-align: center; }
+.filtres button[aria-current] .compteur { background: #F1E8D5; color: #1C1612; }
+.filtres-generaux { display: flex; flex-wrap: wrap; align-items: end; gap: 10px 14px; margin: 8px 0 16px; padding: 14px 16px; border: 1px solid var(--bord); border-radius: 12px; background: var(--carte); }
+.filtres-generaux label { flex: 0 1 170px; }
+.filtres-generaux .filtres-generaux__texte { flex: 1 1 240px; }
+.commande__badges { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.badge--etape[data-statut="nouvelle"] { background: #FFF1C9; color: #7A5A00; }
+.badge--etape[data-statut="en_preparation"] { background: #FBE3DF; color: var(--alerte); }
+.badge--etape[data-statut="expediee"] { background: #E1ECF8; color: #24507F; }
+.commande__plein { grid-column: 1 / -1; margin: 0; }
 
 /* Fiche livre */
 .fiche { display: grid; grid-template-columns: 240px 1fr; gap: 28px; align-items: start; }
