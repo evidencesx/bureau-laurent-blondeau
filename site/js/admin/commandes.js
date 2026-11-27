@@ -131,7 +131,7 @@ export async function vueCommandes(ctx, param) {
     const ancien = c.statut;
     if (nouveau === ancien) return true;
     if (nouveau === 'annulee') {
-      const ok = await confirmer('Annuler cette commande ? Pensez à rembourser le client dans Stripe. Les livres seront remis en stock.', { oui: 'Annuler la commande', danger: true });
+      const ok = await confirmer('Annuler cette commande ? Les livres seront remis en stock. Pensez à rembourser le client dans Stripe, puis à émettre un avoir (onglet Factures).', { oui: 'Annuler la commande', danger: true });
       if (!ok) return false;
     }
     if (nouveau === 'archivee') {

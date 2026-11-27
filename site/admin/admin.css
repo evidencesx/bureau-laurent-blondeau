@@ -145,3 +145,17 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent-clai
 }
 .ligne--edition { display: block; }
 .ligne--edition .ajout { margin: 0; border: 0; padding: 4px 0; }
+
+/* Factures et avoirs */
+.document { display: flex; flex-direction: column; gap: 10px; padding: 16px; border: 1px solid var(--bord); border-radius: 12px; background: var(--carte); }
+.document--avoir { border-style: dashed; }
+.document__tete { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.document__montant { text-align: right; white-space: nowrap; }
+.document__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; }
+.document p { margin: 0; }
+.avoir__ligne { display: grid; grid-template-columns: 1fr 90px; gap: 2px 12px; align-items: center; }
+.avoir__ligne .petit { grid-column: 1; }
+.avoir__ligne input { grid-column: 2; grid-row: 1 / span 2; }
+.avoir__total { font-weight: 700; }
+.deux-boutons { display: flex; align-items: center; gap: 18px; }
+.filtres-generaux .btn { margin-left: auto; }

@@ -5,9 +5,9 @@
 // de Tom). Personne d'autre : la clé publique du site, que tout visiteur
 // télécharge, ne suffit pas.
 //
-// Reprise simplifiée de la fonction du site de L'Atelier du Bout d'à Haut :
-// pas de numéro de facture ni de mentions de TVA ici (à ajouter si Laurent
-// a besoin de factures numérotées).
+// La facture (PDF) est émise par la fonction « documents » et jointe aux deux
+// e-mails. Si elle ne peut pas être fabriquée, le récapitulatif part quand même,
+// sans pièce jointe : Laurent la retrouve dans l'administration (Factures).
 //
 // Déploiement : Supabase > Edge Functions > Deploy a new function > Via Editor,
 // nommer la fonction « envoyer-confirmation », laisser « Verify JWT » activé.
@@ -88,7 +88,24 @@ function gabarit(titre: string, corps: string): string {
   </div></body></html>`;
 }
 
-function emailLecteur(c: any, lignes: any[]) {
+// La facture de la commande, émise au besoin, en PDF (base64). null si échec.
+async function facture(commandeId: string): Promise<{ numero: string; base64: string } | null> {
+  try {
+    const r = await fetch(`${URL_SUPABASE}/functions/v1/documents`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${CLE_SERVICE}`, 'content-type': 'application/json' },
+      body: JSON.stringify({ type: 'facture', commande_id: commandeId, avec_pdf: true }),
+    });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || !d.pdf_base64) throw new Error(`documents ${r.status} : ${d.erreur ?? 'réponse vide'}`);
+    return { numero: d.numero, base64: d.pdf_base64 };
+  } catch (err) {
+    console.error('envoyer-confirmation : facture', err);
+    return null;
+  }
+}
+
+function emailLecteur(c: any, lignes: any[], numeroFacture: string | null) {
   const corps = `
     <p>Bonjour ${echapper(prenom(c.client_nom))},</p>
     <p>Merci pour votre commande, bien reçue et réglée. Je prépare votre colis et vous l'envoie très vite.</p>
@@ -98,13 +115,14 @@ function emailLecteur(c: any, lignes: any[]) {
     </table>
     <p style="color:${C.attenue};margin:0">Livraison à :</p>
     <p style="margin:4px 0 20px">${adresse(c).map(echapper).join('<br>')}</p>
-    <p>Commande n° <b>${echapper(c.numero)}</b>. Une question ? Répondez simplement à cet e-mail.</p>
+    <p>Commande n° <b>${echapper(c.numero)}</b>.${numeroFacture ? ` Votre facture n° ${echapper(numeroFacture)} est jointe à cet e-mail.` : ''} Une question ? Répondez simplement à cet e-mail.</p>
     <p>À bientôt,<br>Laurent Blondeau</p>
     ${SITE ? `<p style="font-size:13px;color:${C.attenue}"><a href="${SITE}" style="color:${C.accent}">${SITE.replace(/^https?:\/\//, '')}</a></p>` : ''}`;
   const texte = [`Bonjour ${prenom(c.client_nom)},`, '', 'Merci pour votre commande, bien reçue et réglée.', '',
     ...lignes.map((l) => `- ${l.titre_livre}${l.quantite > 1 ? ` x ${l.quantite}` : ''} : ${euros(l.prix_unitaire_cents * l.quantite)}${l.dedicace ? ` (dédicace : ${l.dedicace})` : ''}`),
     `Livraison : ${euros(c.livraison_cents)}`, `Total réglé : ${euros(c.total_cents)}`, '',
-    'Livraison à :', ...adresse(c), '', `Commande n° ${c.numero}`, '', 'Laurent Blondeau'].join('\n');
+    'Livraison à :', ...adresse(c), '', `Commande n° ${c.numero}`,
+    ...(numeroFacture ? [`Facture n° ${numeroFacture} en pièce jointe.`] : []), '', 'Laurent Blondeau'].join('\n');
   return { sujet: `Votre commande ${c.numero}`, html: gabarit('Merci pour votre commande', corps), texte };
 }
 
@@ -115,14 +133,15 @@ function emailAuteur(c: any, lignes: any[]) {
     <p style="color:${C.attenue};margin:0">À expédier à :</p>
     <p style="margin:4px 0 16px">${adresse(c).map(echapper).join('<br>')}</p>
     <p>${echapper(c.client_email)}${c.client_telephone ? ' · ' + echapper(c.client_telephone) : ''}</p>
-    ${SITE ? `<p><a href="${SITE}/admin/commandes.html" style="color:${C.accent}">Ouvrir les commandes</a></p>` : ''}`;
+    ${SITE ? `<p><a href="${SITE}/admin/#commandes" style="color:${C.accent}">Ouvrir les commandes</a></p>` : ''}`;
   const texte = [`Nouvelle commande ${c.numero} : ${euros(c.total_cents)}`, '',
     ...lignes.map((l) => `- ${l.titre_livre} x ${l.quantite}${l.dedicace ? ` (dédicace : ${l.dedicace})` : ''}`), '',
     'À expédier à :', ...adresse(c), c.client_email].join('\n');
   return { sujet: `Nouvelle commande ${c.numero}`, html: gabarit('Nouvelle commande', corps), texte };
 }
 
-async function envoyer(a: { email: string; nom?: string }, m: { sujet: string; html: string; texte: string }, repondreA?: string) {
+type PieceJointe = { content: string; name: string };
+async function envoyer(a: { email: string; nom?: string }, m: { sujet: string; html: string; texte: string }, repondreA?: string, pieces: PieceJointe[] = []) {
   const appel = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
     headers: { 'api-key': BREVO_API_KEY, 'content-type': 'application/json' },
@@ -131,6 +150,7 @@ async function envoyer(a: { email: string; nom?: string }, m: { sujet: string; h
       to: [{ email: a.email, name: a.nom }],
       ...(repondreA ? { replyTo: { email: repondreA } } : {}),
       subject: m.sujet, htmlContent: m.html, textContent: m.texte, tags: ['commande'],
+      ...(pieces.length ? { attachment: pieces } : {}),
     }),
   });
   if (!appel.ok) throw new Error(`Brevo ${appel.status} : ${(await appel.text()).slice(0, 300)}`);
@@ -165,12 +185,14 @@ Deno.serve(async (req) => {
     // Stripe peut relancer le webhook : une seule confirmation, sauf renvoi voulu depuis l'admin.
     if (commande.confirmation_envoyee_at && corps.forcer !== true) return reponse(req, { deja_envoyee: true });
 
-    await envoyer({ email: commande.client_email, nom: commande.client_nom }, emailLecteur(commande, lignes), AUTEUR_EMAIL || undefined);
+    const f = await facture(commande.id);
+    const pieces = f ? [{ content: f.base64, name: `Facture-${f.numero}.pdf` }] : [];
+    await envoyer({ email: commande.client_email, nom: commande.client_nom }, emailLecteur(commande, lignes, f?.numero ?? null), AUTEUR_EMAIL || undefined, pieces);
     await admin.from('commandes').update({ confirmation_envoyee_at: new Date().toISOString() }).eq('id', commande.id);
 
     // L'avis à Laurent passe après : son échec ne doit pas faire croire au lecteur que rien n'est parti.
     if (AUTEUR_EMAIL) {
-      try { await envoyer({ email: AUTEUR_EMAIL }, emailAuteur(commande, lignes), commande.client_email); }
+      try { await envoyer({ email: AUTEUR_EMAIL }, emailAuteur(commande, lignes), commande.client_email, pieces); }
       catch (err) { console.error("envoyer-confirmation : avis à l'auteur", err); }
     }
     console.log('Confirmation envoyée', commande.numero, 'par', appelant);

@@ -8,6 +8,7 @@ import { listeLivres, ficheLivre } from './livres.js';
 import { vueStyles, vueEvenements, vuePresse } from './listes.js';
 import { vueCommandes } from './commandes.js';
 import { vueMessages } from './messages.js';
+import { vueFactures } from './factures.js';
 
 const vue = document.getElementById('vue');
 
@@ -62,7 +63,7 @@ async function accueil(ctx) {
 
 const ROUTES = {
   accueil, livres: listeLivres, livre: ficheLivre, styles: vueStyles,
-  evenements: vueEvenements, presse: vuePresse, commandes: vueCommandes, messages: vueMessages,
+  evenements: vueEvenements, presse: vuePresse, commandes: vueCommandes, factures: vueFactures, messages: vueMessages,
 };
 
 async function afficher(ctx) {

@@ -46,10 +46,10 @@ HTML, CSS et JavaScript simples, sans framework ni étape de construction. Pour 
 
 Architecture reprise du site de L'Atelier du Bout d'à Haut.
 
-1. **Supabase** : créer un projet (région Paris), puis dans SQL Editor exécuter `supabase/installation.sql` puis `supabase/amorcage.sql`.
+1. **Supabase** : créer un projet (région Paris), puis dans SQL Editor exécuter `supabase/installation.sql`, `supabase/amorcage.sql`, puis les migrations dans l’ordre de leur date (`migration-2026-11-27-commandes-archivees.sql`, `migration-2026-11-28-factures-avoirs.sql`).
 2. Copier l'adresse du projet et la clé « publishable » dans `site/js/config.js`. Ne jamais y mettre la clé secrète.
 3. **Authentication > Users** : créer les utilisateurs listés dans `est_admin()` (Add user, Auto Confirm). **Sign In / Providers > Email** : désactiver « Allow new users to sign up ». **URL Configuration** : adresse du site en Site URL et dans Redirect URLs.
-4. **Edge Functions** : déployer les quatre fonctions de `supabase/functions/` (Deploy a new function > Via Editor). Désactiver « Verify JWT » pour `stripe-webhook` et `envoyer-message`.
+4. **Edge Functions** : déployer les cinq fonctions de `supabase/functions/` (dont `documents`, qui fabrique les factures et avoirs en PDF) (Deploy a new function > Via Editor). Désactiver « Verify JWT » pour `stripe-webhook` et `envoyer-message`.
 5. **Secrets** (Edge Functions > Secrets) : `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SITE_URL`, `BREVO_API_KEY`, `EXPEDITEUR_EMAIL` (adresse validée dans Brevo), `AUTEUR_EMAIL` (boîte de Laurent).
 6. **Stripe** : webhook vers `https://<projet>.supabase.co/functions/v1/stripe-webhook`, évènements `checkout.session.completed` et `checkout.session.expired`. Commencer en mode test.
 
@@ -57,6 +57,6 @@ La livraison est un forfait de 5 € par commande, France métropolitaine : `fra
 
 ## Déploiement
 
-Netlify publie le dossier `site/` à chaque push sur `main` (voir `netlify.toml`). Avant l'ouverture au public : compléter les pages légales, retirer les balises `robots` des pages et l'en-tête `X-Robots-Tag` général de `netlify.toml` (celui de `/admin/` reste).
+Netlify publie le dossier `site/` à chaque push sur `main` (voir `netlify.toml`). Le site est ouvert aux moteurs de recherche depuis le 27/11/2026 (domaine laurentblondeau.fr). Restent en `noindex` : l'administration, le panier et la page de confirmation.
 
 © Laurent Blondeau pour les textes, les couvertures et le portrait.
