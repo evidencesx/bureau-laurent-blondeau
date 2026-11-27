@@ -178,11 +178,13 @@ export async function vuePresse(ctx) {
         <p class="petit"><a href="${echapper(/^https?:/.test(a.url) ? a.url : '../' + a.url)}" target="_blank" rel="noopener">${echapper(a.url)}</a></p>
       </div>
       <span class="ligne__actions">
+        <button class="lien" data-a="modifier">Modifier</button>
         ${a.a_la_une ? '' : '<button class="lien" data-a="une">Mettre à la une</button>'}
         <button class="lien lien--danger" data-a="suppr">Supprimer</button>
       </span>`;
     li.addEventListener('click', async (e) => {
       const action = e.target.closest('[data-a]')?.dataset.a;
+      if (action === 'modifier') { modifierArticle(ctx, li, a); return; }
       if (action === 'une') {
         const r1 = await sb.from('presse').update({ a_la_une: false }).eq('a_la_une', true);
         const r2 = await sb.from('presse').update({ a_la_une: true }).eq('id', a.id);
@@ -212,6 +214,44 @@ export async function vuePresse(ctx) {
     });
     if (e3) { toast(erreurLisible(e3), 'erreur'); return; }
     toast('Article ajouté.');
+    vuePresse(ctx);
+  });
+}
+
+// Modifier un article déjà publié : la ligne devient un formulaire, sur place.
+function modifierArticle(ctx, li, a) {
+  const { sb } = ctx;
+  li.className = 'ligne ligne--edition';
+  li.innerHTML = `
+    <form class="ajout ajout--colonne">
+      <div class="deux">
+        <label>Journal ou média<input name="media" required maxlength="120" value="${echapper(a.media)}"></label>
+        <label>Lien vers l’article<input name="url" required value="${echapper(a.url)}"></label>
+      </div>
+      <label>Titre de l’article <small>facultatif</small><input name="titre" maxlength="250" value="${echapper(a.titre || '')}"></label>
+      <label>Extrait <small>facultatif, une ou deux phrases</small><textarea name="extrait" rows="2" maxlength="500">${echapper(a.extrait || '')}</textarea></label>
+      <div class="deux">
+        <label>Année<input name="annee" type="number" min="1990" max="2100" required value="${a.annee}"></label>
+        <label>Date précise <small>facultatif</small><input name="date_article" type="date" value="${a.date_article || ''}"></label>
+      </div>
+      <div class="actions">
+        <button class="btn">Enregistrer</button>
+        <button class="btn btn--clair" type="button" data-annuler>Annuler</button>
+      </div>
+    </form>`;
+  const f = li.querySelector('form');
+  f.media.focus();
+  li.querySelector('[data-annuler]').addEventListener('click', () => vuePresse(ctx));
+  f.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!f.reportValidity()) return;
+    const d = Object.fromEntries(new FormData(f));
+    const { error } = await sb.from('presse').update({
+      media: d.media.trim(), url: d.url.trim(), titre: d.titre.trim() || null, extrait: d.extrait.trim() || null,
+      annee: parseInt(d.annee, 10), date_article: d.date_article || null,
+    }).eq('id', a.id);
+    if (error) { toast(erreurLisible(error), 'erreur'); return; }
+    toast('Article modifié.');
     vuePresse(ctx);
   });
 }

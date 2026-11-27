@@ -88,9 +88,9 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent-clai
 .lignes--passees .ligne { opacity: .7; }
 .ajout { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 16px 0 8px; padding: 16px; border: 1px dashed var(--bord); border-radius: 12px; }
 .ajout label { flex: 1 1 200px; }
-.ajout--colonne { flex-direction: column; align-items: stretch; }
+.ajout--colonne { flex-direction: column; flex-wrap: nowrap; align-items: stretch; } /* en colonne, le retour à la ligne de .ajout étirait les rangées */
 .ajout--colonne .btn, .ajout--colonne .interrupteur { align-self: flex-start; }
-.ajout--colonne label { flex: none; }
+.ajout--colonne label, .ajout .deux label { flex: none; }
 .filtres { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .filtres a { padding: 6px 14px; border: 1px solid var(--bord); border-radius: 20px; text-decoration: none; color: var(--texte); }
 .filtres a[aria-current] { background: #1C1612; border-color: #1C1612; color: #F1E8D5; }
@@ -131,3 +131,5 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent-clai
   .onglets { order: 3; flex: 1 1 100%; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -12px; padding: 0 12px; }
   .onglets a { flex: none; padding: 6px 10px; font-size: 15px; }
 }
+.ligne--edition { display: block; }
+.ligne--edition .ajout { margin: 0; border: 0; padding: 4px 0; }

@@ -185,11 +185,13 @@ function presse(d) {
   const enUne = tri.find((a) => a.a_la_une) || tri.find((a) => a.titre) || tri[0];
   const lien = (a) => el('a', { class: 'gazette__lien', href: a.url, target: '_blank', rel: 'noopener' }, 'Lire l’article');
   if (enUne) {
-    une.replaceChildren(
+    // filter(Boolean) : sans extrait, rien ne s'affiche (replaceChildren écrirait « null » en toutes lettres).
+    une.replaceChildren(...[
       el('p', { class: 'gazette__rubrique', texte: `${enUne.media} · ${quand(enUne)}` }),
       el('h3', { texte: enUne.titre || enUne.media }),
       enUne.extrait && el('p', { class: 'gazette__chapo', texte: `« ${enUne.extrait} »` }),
-      lien(enUne));
+      lien(enUne),
+    ].filter(Boolean));
   }
   une.hidden = !enUne;
   liste.replaceChildren(...tri.filter((a) => a !== enUne).map((a) => el('li', {},
