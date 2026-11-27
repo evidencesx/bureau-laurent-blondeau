@@ -519,6 +519,11 @@ h1, h2, h3, p { margin: 0; }
 .ob-prix { font-weight: 300; font-size: 34px; line-height: 1.2; }
 .ob-achat button { flex: 1 1 144px; min-height: 44px; border: 0; padding: 8px 13px; background: var(--encre); color: var(--papier); font-family: var(--etiquette); font-weight: 500; font-size: 21px; letter-spacing: .1em; }
 .ob-achat button:disabled { opacity: .55; cursor: not-allowed; }
+.ob-quantite { display: inline-flex; align-items: center; border: 1px solid rgba(34, 37, 43, .35); }
+.ob-quantite[hidden] { display: none; }
+.ob-achat .ob-quantite button { flex: none; width: 44px; min-height: 44px; padding: 0; background: transparent; color: var(--encre); font-family: var(--titre); font-size: 24px; letter-spacing: 0; }
+.ob-quantite span { min-width: 34px; text-align: center; font-size: 21px; font-variant-numeric: tabular-nums; }
+.ob-voir { flex-basis: 100%; font-size: 16px; color: var(--encre); }
 .ob-note { flex-basis: 100%; font-size: 15px; color: var(--encre-douce); }
 .lecteur--simple .ob-page--gauche { display: none; }
 .lecteur--simple .ob-page--droite > .ob-tete { display: flex; }

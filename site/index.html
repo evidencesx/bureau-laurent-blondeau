@@ -268,7 +268,13 @@
           <div class="ob-corps"></div>
           <div class="ob-achat">
             <p class="ob-prix"></p>
+            <div class="ob-quantite" role="group" aria-label="Nombre d’exemplaires" hidden>
+              <button type="button" data-q="moins" aria-label="Un exemplaire de moins">−</button>
+              <span aria-live="polite">1</span>
+              <button type="button" data-q="plus" aria-label="Un exemplaire de plus">+</button>
+            </div>
             <button type="button" class="ob-ajouter" disabled>Ajouter au panier</button>
+            <a class="ob-voir" href="panier.html" hidden></a>
             <p class="ob-note">Envoyé par l’auteur, dédicace possible. Livraison en France métropolitaine&nbsp;: 5&nbsp;€ par commande.</p>
           </div>
         </div>
