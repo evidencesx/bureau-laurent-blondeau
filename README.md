@@ -49,11 +49,15 @@ Architecture reprise du site de L'Atelier du Bout d'à Haut.
 1. **Supabase** : créer un projet (région Paris), puis dans SQL Editor exécuter `supabase/installation.sql`, `supabase/amorcage.sql`, puis les migrations dans l’ordre de leur date (`migration-2026-11-27-commandes-archivees.sql`, `migration-2026-11-28-factures-avoirs.sql`).
 2. Copier l'adresse du projet et la clé « publishable » dans `site/js/config.js`. Ne jamais y mettre la clé secrète.
 3. **Authentication > Users** : créer les utilisateurs listés dans `est_admin()` (Add user, Auto Confirm). **Sign In / Providers > Email** : désactiver « Allow new users to sign up ». **URL Configuration** : adresse du site en Site URL et dans Redirect URLs.
-4. **Edge Functions** : déployer les cinq fonctions de `supabase/functions/` (dont `documents`, qui fabrique les factures et avoirs en PDF) (Deploy a new function > Via Editor). Désactiver « Verify JWT » pour `stripe-webhook` et `envoyer-message`.
+4. **Edge Functions** : déployer les six fonctions de `supabase/functions/` (dont `documents`, qui fabrique les factures et avoirs en PDF, et `garder-en-vie`). Taper le nom de la fonction AVANT de coller le code : c’est lui qui fixe son adresse (Deploy a new function > Via Editor). Désactiver « Verify JWT » pour `stripe-webhook`, `envoyer-message` et `garder-en-vie`.
 5. **Secrets** (Edge Functions > Secrets) : `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SITE_URL`, `BREVO_API_KEY`, `EXPEDITEUR_EMAIL` (adresse validée dans Brevo), `AUTEUR_EMAIL` (boîte de Laurent).
 6. **Stripe** : webhook vers `https://<projet>.supabase.co/functions/v1/stripe-webhook`, évènements `checkout.session.completed` et `checkout.session.expired`. Commencer en mode test.
 
 La livraison est un forfait de 5 € par commande, France métropolitaine : `frais_livraison_cents()` dans la base (le chiffre de `config.js` ne sert qu'à l'affichage).
+
+## Robot « garder en vie »
+
+`.github/workflows/garder-en-vie.yml` sollicite tous les deux jours la base Supabase (pause après 7 jours sans activité sur l’offre gratuite) et la clé Brevo (désactivée après 90 jours sans usage). En cas d’échec, GitHub prévient le propriétaire du dépôt par e-mail.
 
 ## Déploiement
 

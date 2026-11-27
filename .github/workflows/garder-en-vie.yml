@@ -1,0 +1,63 @@
+# Garde en vie les comptes gratuits du site : la base Supabase et la clé Brevo.
+#
+# POURQUOI. Supabase met en pause un projet gratuit sans activité pendant 7 jours
+# (site sans livres, sans paiement, jusqu'à un réveil à la main). Brevo désactive
+# une clé API inutilisée pendant 90 jours (plus d'e-mails de commande ni de
+# messages du formulaire de contact). Les tâches planifiées DANS la base ne
+# comptent pas : ce sont les requêtes entrantes qui comptent.
+#
+# CE QUE FAIT CE ROBOT, tous les deux jours :
+#   1. une lecture minuscule dans la base (une colonne, une ligne) ;
+#   2. un appel à la fonction garder-en-vie, qui touche la base et la clé Brevo
+#      (lecture des statistiques du jour, aucun e-mail envoyé) ;
+#   3. il se réactive lui-même : GitHub coupe les tâches planifiées d'un dépôt
+#      public resté 60 jours sans modification.
+# S'il échoue, GitHub envoie un e-mail au propriétaire du dépôt : ça vaut alerte.
+
+name: Garder les comptes en vie
+
+on:
+  # Tous les deux jours : les tâches planifiées de GitHub peuvent être retardées
+  # ou sautées, deux jours laissent de la marge dans la fenêtre de sept.
+  schedule:
+    - cron: '37 7 */2 * *'
+  # Lancement à la main depuis l'onglet Actions, pour vérifier sans attendre.
+  workflow_dispatch:
+
+permissions:
+  actions: write   # pour se réactiver lui-même (étape 3), rien d'autre
+
+jobs:
+  reveiller:
+    runs-on: ubuntu-latest
+    env:
+      # Pas des secrets : ces deux valeurs sont déjà dans site/js/config.js,
+      # téléchargées par chaque visiteur. La clé publiable ne permet que de lire
+      # le catalogue publié ; les règles de la base refusent tout le reste.
+      URL_BASE: https://outdeoijoafekospeagg.supabase.co
+      CLE_PUBLIABLE: sb_publishable_B7SPUASE-fRI5XEazZ9-eA_H0RVXJuW
+    steps:
+      - name: Interroger la base
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "apikey: ${CLE_PUBLIABLE}" -H "Authorization: Bearer ${CLE_PUBLIABLE}" \
+            "${URL_BASE}/rest/v1/livres?select=id&limit=1")
+          echo "Base : ${code}"
+          if [ "${code}" != "200" ]; then
+            echo "::error::La base n'a pas répondu 200 : projet en pause, clé changée ou incident Supabase."
+            exit 1
+          fi
+
+      - name: Garder la clé Brevo active
+        run: |
+          reponse=$(curl -s -w '\n%{http_code}' -X POST "${URL_BASE}/functions/v1/garder-en-vie")
+          echo "Fonction garder-en-vie : ${reponse}"
+          if [ "$(echo "${reponse}" | tail -n1)" != "200" ]; then
+            echo "::error::La clé Brevo ou la fonction garder-en-vie ne répond pas : vérifier les journaux de la fonction dans Supabase."
+            exit 1
+          fi
+
+      - name: Rester actif côté GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/garder-en-vie.yml/enable"
