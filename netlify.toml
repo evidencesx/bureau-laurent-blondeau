@@ -2,6 +2,14 @@
 [build]
   publish = "site"
 
+# L’adresse Netlify d’origine renvoie vers le vrai domaine : le paiement et le
+# formulaire de contact n’acceptent que laurentblondeau.fr (secret SITE_URL).
+[[redirects]]
+  from = "https://laurent-blondeau-bureau.netlify.app/*"
+  to = "https://laurentblondeau.fr/:splat"
+  status = 301
+  force = true
+
 [[headers]]
   for = "/*"
   [headers.values]
@@ -9,8 +17,6 @@
     X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-    # Préproduction : les moteurs de recherche ne doivent pas l'indexer. À retirer à l'ouverture.
-    X-Robots-Tag = "noindex"
 
 # L'administration ne doit jamais être indexée, même après l'ouverture du site.
 [[headers]]
